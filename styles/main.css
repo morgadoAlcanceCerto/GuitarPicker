@@ -369,6 +369,7 @@ table.data tr:hover td { background: var(--panel-2); }
   }
 }
 @keyframes hint-fade { 0%, 70% { opacity: 1; } 100% { opacity: 0; } }
+.play-controls .rate-select { width: auto; min-width: 118px; flex: none; }
 
 /* ---------- Celular (pt-BR): ajustes de toque e de leitura ----------
    Barra de baixo com nome embaixo do ícone, cabeçalhos e filtros empilhados,

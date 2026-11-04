@@ -343,6 +343,17 @@ function fakeCtx() {
   fwd.seek(5); fwd.schedule(5);
   ok("seeking forward starts from the right note", fwd._live.length === 1);
   ok("an empty band is inert", new Band([]).empty && new Band([{ instrument: "piano", notes: [] }]).empty);
+
+  // redutor de velocidade: a 50% a mesma nota cai o dobro de tempo real depois
+  const slow = mk(); slow.setRate(0.5);
+  slow.schedule(0);
+  ok("at 50% the lookahead covers half as much song time", slow._live.length === 1);
+  slow.schedule(0.85);
+  ok("at 50% the next note still queues when the clock gets close", slow._live.length === 2);
+  // nota no tempo 1 com o relógio em 0,85: faltam 0,15 s de música = 0,3 s reais; duração 0,5 s vira 1 s
+  const t0 = slow._ctx().currentTime;
+  ok("at 50% the band schedules the note twice as late and twice as long", Math.abs(slow._live[1].end - (t0 + 0.3 + 1 + 1.5)) < 1e-6);
+  ok("rate is clamped to a sane range", (() => { const r = mk(); r.setRate(0); return r.rate === 1; })() && (() => { const r = mk(); r.setRate(0.1); return r.rate === 0.25; })());
 }
 
 // ---- auto-accompaniment ----

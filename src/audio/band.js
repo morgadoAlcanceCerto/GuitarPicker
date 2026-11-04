@@ -20,6 +20,7 @@ export class Band {
     }));
     this.a4 = a4;
     this.volume = volume;
+    this.rate = 1;          // velocidade da música (1 = normal, 0.5 = metade)
     this._ctxOverride = ctx;
     this._live = [];
     this._g = null;
@@ -42,6 +43,9 @@ export class Band {
 
   setVolume(v) { this.volume = v; if (this._g) this._g.gain.value = v; }
 
+  /** Velocidade de reprodução: o relógio da música anda `rate` segundos por segundo real. */
+  setRate(r) { this.rate = Math.max(0.25, Math.min(2, r || 1)); }
+
   /** Move the playhead; anything already queued is dropped. */
   seek(sec) {
     for (const p of this.parts) {
@@ -57,14 +61,14 @@ export class Band {
     if (this.empty) return;
     const ctx = this._ctx();
     const dest = this._dest();
-    const base = ctx.currentTime - clock;   // context time of transport zero
-    const horizon = clock + LOOKAHEAD;
+    const rate = this.rate || 1;
+    const horizon = clock + LOOKAHEAD * rate;
     for (const p of this.parts) {
       while (p.i < p.notes.length && p.notes[p.i].time < horizon) {
         const n = p.notes[p.i++];
-        const at = base + n.time;
+        const at = ctx.currentTime + (n.time - clock) / rate;   // tempo da música → tempo real
         if (at < ctx.currentTime) continue;   // late (clock jumped) — skip, don't pile up
-        const dur = n.dur || 0.4;
+        const dur = (n.dur || 0.4) / rate;
         for (const m of n.midi) {
           this._live.push({ kill: playVoice(ctx, dest, p.voice, m, { at, dur, gain: (n.gain ?? 1) * p.gain * 0.34, a4: this.a4 }), end: at + dur + 1.5 });
         }

@@ -116,6 +116,32 @@ export default async function play(ctx) {
     oninput: (v) => { Store.setSetting("backingVolume", v); player.setBackingVolume(v); band.setVolume(v); } });
   const volV = slider({ label: "Voz guia", value: s.vocalVolume, fmt: (v) => Math.round(v * 100) + "%",
     oninput: (v) => { Store.setSetting("vocalVolume", v); player.setVocalVolume(v); } });
+  // ----- redutor de velocidade -----
+  // 50–100%: tudo anda junto (pista, banda, áudio de fundo, metrônomo, nota tocada).
+  const RATES = [0.5, 0.6, 0.7, 0.8, 0.9, 1];
+  let rate = RATES.includes(s.playRate) ? s.playRate : 1;
+  const rateLbl = () => (rate === 1 ? "🐢 Velocidade 100%" : `🐢 Velocidade ${Math.round(rate * 100)}%`);
+  const rateSel = el("select.input.rate-select", { title: "Deixa a música mais lenta para treinar (o tom não muda)",
+    onchange: (e) => setRate(parseFloat(e.target.value)) },
+    RATES.map((r) => el("option", { value: String(r), text: r === 1 ? "🐢 100% (normal)" : `🐢 ${Math.round(r * 100)}%`, selected: r === rate })));
+  function setRate(r) {
+    rate = r; Store.setSetting("playRate", r);
+    band.setRate(r); player.setRate(r);
+    if (bandOn && playing) band.seek(Math.max(0, clock));
+    rateSel.title = rateLbl();
+  }
+  band.setRate(rate); player.setRate(rate);
+
+  // ----- modo espera -----
+  // Ligado, a música para em cada nota e só continua quando o microfone ouve você tocá-la.
+  let waitMode = !!s.waitMode;
+  let holding = null;   // nota em que a música está parada esperando
+  const waitBtn = el("button.btn", { class: waitMode ? "primary" : "", title: "A música para em cada nota e espera você acertar", onclick: () => {
+    waitMode = !waitMode; Store.setSetting("waitMode", waitMode);
+    waitBtn.classList.toggle("primary", waitMode);
+    if (!waitMode && holding) releaseHold();
+  } }, ["⏳ Esperar nota"]);
+
   const metroBtn = el("button.btn", { onclick: () => { metro = !metro; metroBtn.classList.toggle("primary", metro); } }, ["🥁 Metrônomo"]);
   let metro = false;
   let noteSounds = s.noteSounds ?? true;
@@ -136,7 +162,7 @@ export default async function play(ctx) {
   } }, ["🎤 Karaokê"]) : null;
 
   const controls = el("div.play-controls", {}, [
-    playBtn, restartBtn,
+    playBtn, restartBtn, rateSel, waitBtn,
     el("div.muted", { style: { minWidth: "70px" }, id: "play-clock", text: "0:00" }),
     el("div", { style: { flex: "1" } }),
     (!player.hasAudio() && band.empty) ? el("span.muted", { style: { fontSize: "12px" }, text: "Sem áudio de acompanhamento — importe um no Editor de músicas." }) : null,
@@ -208,7 +234,7 @@ export default async function play(ctx) {
     await Audio.resume();
     playing = true; started = true;
     playBtn.textContent = "⏸ Pausar";
-    if (clock >= 0) player.play(clock);
+    if (clock >= 0 && !holding) player.play(clock);
     lastTs = performance.now();
     requestAnimationFrame(loop);
   }
@@ -222,7 +248,8 @@ export default async function play(ctx) {
     clock = -LEAD_IN; health = 100; failed = false; score = 0; streak = 0; maxStreak = 0; mult = 1;
     counts.perfect = counts.good = counts.off = counts.miss = 0;
     soundIdx = 0; onsetAt = -1; lastOnsetAt = -10; lastRms = 0;
-    notes.forEach((n) => { n.state = "pending"; n.best = 999; n.frames = 0; });
+    notes.forEach((n) => { n.state = "pending"; n.best = 999; n.frames = 0; n.heard = false; });
+    holding = null;
     killfeed.innerHTML = "";
     player.seek(0); band.seek(0);
     playBtn.textContent = "▶ Começar";
@@ -235,16 +262,27 @@ export default async function play(ctx) {
     const dt = Math.min(0.05, (ts - lastTs) / 1000);
     lastTs = ts;
 
+    // modo espera: parar o relógio na nota que ainda não foi tocada
+    const w = waitingNote();
+    if (w && !holding) {
+      holding = w; clock = w.time;
+      player.pause(); band.silence();
+    } else if (!w && holding) {
+      releaseHold();
+    }
+
     // advance clock; sync to audio when available and past lead-in
-    if (player.hasAudio() && clock >= 0 && player.backing && !player.backing.paused) {
+    if (holding) {
+      // parado esperando — o relógio não anda
+    } else if (player.hasAudio() && clock >= 0 && player.backing && !player.backing.paused) {
       clock = player.backing.currentTime;
     } else {
-      clock += dt;
+      clock += dt * rate;
       if (clock >= 0 && player.hasAudio() && (player.backing?.paused)) player.play(clock);
     }
 
     // synth band (schedules ahead of the clock, so it stays in time regardless of frame rate)
-    if (bandOn) band.schedule(clock);
+    if (bandOn && !holding) band.schedule(clock);
 
     // metronome
     if (metro) {
@@ -256,7 +294,7 @@ export default async function play(ctx) {
     while (soundIdx < notes.length && notes[soundIdx].time <= clock) {
       const n = notes[soundIdx++];
       if (noteSounds && clock - n.time < 0.3) {
-        for (const m of n.midi) Synth.playMidi(m, { dur: Math.max(0.4, Math.min(n.dur, 2)), a4, gain: 0.18, instrument: playInst });
+        for (const m of n.midi) Synth.playMidi(m, { dur: Math.max(0.4, Math.min(n.dur / rate, 3)), a4, gain: 0.18, instrument: playInst });
       }
     }
 
@@ -294,7 +332,7 @@ export default async function play(ctx) {
           if (onsetAt <= n.time + n.dur + HIT_PAD &&
               (!best || Math.abs(n.time - onsetAt) < Math.abs(best.time - onsetAt))) best = n;
         }
-        if (best) { best.frames++; best.best = Math.min(best.best, Math.abs(best.time - onsetAt)); }
+        if (best) { best.frames++; best.heard = true; best.best = Math.min(best.best, Math.abs(best.time - onsetAt)); }
         onsetAt = -1;
       }
       for (const n of notes) {
@@ -318,10 +356,26 @@ export default async function play(ctx) {
           const cents = Math.abs((diff - Math.round(diff / 12) * 12) * 100);
           if (cents < bestCents) bestCents = cents;
         }
-        if (bestCents < GOOD_CENTS) { n.frames++; if (bestCents < n.best) n.best = bestCents; }
+        if (bestCents < GOOD_CENTS) { n.frames++; if (n.frames >= 2) n.heard = true; if (bestCents < n.best) n.best = bestCents; }
       }
     }
   }
+  // Primeira nota que já chegou na linha e ainda não foi ouvida (só no modo espera).
+  function waitingNote() {
+    if (!waitMode || clock < 0) return null;
+    for (const n of notes) {
+      if (n.state !== "pending") continue;
+      if (n.time > clock + 1e-6) return null;   // notas em ordem: as próximas ainda não chegaram
+      if (!n.heard) return n;
+    }
+    return null;
+  }
+  function releaseHold() {
+    holding = null;
+    if (bandOn) band.seek(Math.max(0, clock));
+    if (player.hasAudio() && clock >= 0 && playing) player.play(clock);
+  }
+
   function finalize(n) {
     let q;
     if (percussion) {                       // n.best holds seconds off the beat, not cents
@@ -406,6 +460,20 @@ export default async function play(ctx) {
       c.fillStyle = getVar("--text"); c.font = "bold 120px var(--font)"; c.textAlign = "center";
       c.globalAlpha = (1 - (Math.abs(t) % 1)) * 0.9 + 0.1;
       c.fillText(String(n), W / 2, H / 2 + 40); c.globalAlpha = 1; c.textAlign = "start";
+    }
+
+    // modo espera: diz qual nota tocar
+    if (holding) {
+      // nome da nota também em dó-ré-mi quando é uma nota só (C4 → Dó)
+      const SOLFEJO = ["Dó", "Dó♯", "Ré", "Ré♯", "Mi", "Fá", "Fá♯", "Sol", "Sol♯", "Lá", "Lá♯", "Si"];
+      const nome = describeMidiSet(holding.midi) + (holding.midi.length === 1 ? ` (${SOLFEJO[((holding.midi[0] % 12) + 12) % 12]})` : "");
+      const txt = "⏳ Toque " + nome + " para continuar";
+      c.font = "bold 17px var(--font)"; c.textAlign = "center";
+      const tw = Math.min(W - 20, c.measureText(txt).width + 30);
+      const y0 = Math.round(H * 0.4);   // abaixo do placar, acima do braço — visível no celular e no computador
+      c.fillStyle = "rgba(0,0,0,0.78)"; c.fillRect(W / 2 - tw / 2, y0, tw, 38);
+      c.strokeStyle = getVar("--warn"); c.lineWidth = 1.5; c.strokeRect(W / 2 - tw / 2, y0, tw, 38);
+      c.fillStyle = getVar("--warn"); c.fillText(txt, W / 2, y0 + 25, W - 30); c.textAlign = "start";
     }
 
     // lyrics
@@ -560,7 +628,8 @@ export default async function play(ctx) {
     const grade = gradeLetter(acc, failed);
     const entry = {
       ts: Date.now(), songId: song.id, songTitle: song.title, instrument: playInst,
-      score, accuracy: acc, maxStreak, passed, durationSec: Math.round(duration),
+      score, accuracy: acc, maxStreak, passed, durationSec: Math.round(duration / rate),
+      rate, waitMode,
       notes: { ...counts },
     };
     Store.addHistory(entry);

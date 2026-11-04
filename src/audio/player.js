@@ -33,13 +33,23 @@ export class TrackPlayer {
     if (a.vocal)   { const r = this._make(a.vocal, s.vocalVolume);   this.vocal = r.audioEl;   this._gainV = r.gain; }
   }
 
+  /** Velocidade do áudio de fundo, sem mudar o tom (preservesPitch). */
+  setRate(r) {
+    this.rate = r || 1;
+    for (const el of [this.backing, this.vocal]) {
+      if (!el) continue;
+      el.preservesPitch = true; el.mozPreservesPitch = true; el.webkitPreservesPitch = true;
+      el.playbackRate = this.rate;
+    }
+  }
+
   setBackingVolume(v) { if (this._gainB) this._gainB.gain.value = v; }
   setVocalVolume(v) { if (this._gainV) this._gainV.gain.value = v; }
 
   async play(fromSec = 0) {
     await Audio.resume();
     for (const el of [this.backing, this.vocal]) {
-      if (el) { try { el.currentTime = fromSec; await el.play(); } catch (e) { console.warn("play blocked", e); } }
+      if (el) { try { el.currentTime = fromSec; el.playbackRate = this.rate || 1; await el.play(); } catch (e) { console.warn("play blocked", e); } }
     }
   }
   pause() { for (const el of [this.backing, this.vocal]) el && el.pause(); }
