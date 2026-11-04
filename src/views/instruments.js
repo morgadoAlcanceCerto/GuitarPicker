@@ -8,16 +8,16 @@ import { Synth } from "../audio/synth.js";
 
 export default function instruments(ctx) {
   const { el: root } = ctx;
-  root.appendChild(pageHead("Instruments", "Every instrument the app models — specs, playing guides, and how GuitarPicker supports each. Click ▶ to hear reference pitches."));
+  root.appendChild(pageHead("Instrumentos", "Todos os instrumentos do app — dados, guias de como tocar e o que o app oferece para cada um. Clique em ▶ para ouvir as notas de referência."));
 
   root.appendChild(el("div.panel.tight", { style: { marginBottom: "16px" } }, [
     el("div.row", {}, [
-      el("span.muted", { style: { fontSize: "13px" }, text: "Facts below (tunings, ranges, hole charts) come from the app's own data — the guide can't drift from what the app plays." }),
+      el("span.muted", { style: { fontSize: "13px" }, text: "Os dados abaixo (afinações, extensões, tabelas de furos) vêm do próprio app — o guia sempre bate com o que o app toca." }),
       el("div", { style: { flex: "1" } }),
-      el("button.btn", { title: "Save this whole guide as a Markdown file", onclick: () => {
+      el("button.btn", { title: "Salva o guia inteiro como arquivo Markdown", onclick: () => {
         download("INSTRUMENTS.md", buildInstrumentsMarkdown(), "text/markdown");
-        toast("Guide saved as INSTRUMENTS.md", "good");
-      } }, ["⬇ Download as Markdown"]),
+        toast("Guia salvo como INSTRUMENTS.md", "good");
+      } }, ["⬇ Baixar em Markdown"]),
     ]),
   ]));
 
@@ -37,13 +37,13 @@ export default function instruments(ctx) {
 
     // at a glance
     const glance = [
-      ["Family", g.family],
-      ["Range (as modeled)", f.range],
-      f.strings.length ? ["Strings", `${f.strings.length} — ${f.strings.map((s) => s.note).join(" ")}`] : null,
-      f.inst.frets ? ["Frets modeled", String(f.inst.frets)] : null,
-      ["Tuner", f.tuner ? "yes" + (f.tunings.length > 1 ? ` (${f.tunings.map((t) => t.name).join(", ")})` : "") : "—"],
-      ["Fingering hint", f.panel || "—"],
-      ["Built-in songs", String(f.songs)],
+      ["Família", g.family],
+      ["Extensão (no app)", f.range],
+      f.strings.length ? ["Cordas", `${f.strings.length} — ${f.strings.map((s) => s.note).join(" ")}`] : null,
+      f.inst.frets ? ["Trastes", String(f.inst.frets)] : null,
+      ["Afinador", f.tuner ? "sim" + (f.tunings.length > 1 ? ` (${f.tunings.map((t) => t.name).join(", ")})` : "") : "—"],
+      ["Dica de dedilhado", f.panel || "—"],
+      ["Músicas embutidas", String(f.songs)],
     ].filter(Boolean);
     body.append(
       el("p", { text: g.overview }),
@@ -51,29 +51,29 @@ export default function instruments(ctx) {
     );
 
     if (f.strings.length) {
-      body.appendChild(el("h3", { style: { marginTop: "14px" }, text: "Strings (low string first)" }));
+      body.appendChild(el("h3", { style: { marginTop: "14px" }, text: "Cordas (da mais grave para a mais aguda)" }));
       body.appendChild(el("table.data", {}, [
-        el("tr", {}, ["String", "Note", "MIDI", "Frequency", ""].map((h) => el("th", { text: h }))),
+        el("tr", {}, ["Corda", "Nota", "MIDI", "Frequência", ""].map((h) => el("th", { text: h }))),
         ...f.strings.map((s) => el("tr", {}, [
           el("td", { text: s.label }), el("td", { text: s.note }), el("td", { text: s.midi }),
           el("td", { text: s.freq.toFixed(1) + " Hz" }),
-          el("td", {}, [el("button.btn.ghost", { title: "Hear this open string", onclick: () => Synth.playMidi(s.midi, { dur: 1.2, instrument: id }) }, ["▶"])]),
+          el("td", {}, [el("button.btn.ghost", { title: "Ouvir esta corda solta", onclick: () => Synth.playMidi(s.midi, { dur: 1.2, instrument: id }) }, ["▶"])]),
         ])),
       ]));
       const alts = f.tunings.filter((t) => t.name !== "standard");
       if (alts.length) body.appendChild(el("p.muted", { style: { fontSize: "13px" },
-        text: "Alternate tunings: " + alts.map((t) => `${t.name} = ${t.notes}`).join(" · ") }));
+        text: "Afinações alternativas: " + alts.map((t) => `${t.name} = ${t.notes}`).join(" · ") }));
     }
 
     if (id === "harmonica") {
-      body.appendChild(el("h3", { style: { marginTop: "14px" }, text: "Hole chart (Richter-tuned C diatonic)" }));
+      body.appendChild(el("h3", { style: { marginTop: "14px" }, text: "Tabela de furos (diatônica em C, afinação Richter)" }));
       body.appendChild(el("table.data", {}, [
-        el("tr", {}, [el("th", { text: "Hole" }), ...harmonicaChart().map((h) => el("th", { text: String(h.hole) }))]),
-        el("tr", {}, [el("th", { text: "Blow ↑" }), ...HARMONICA_BLOW.map((m, i) => el("td", {}, [
-          el("button.btn.ghost", { title: `Hear hole ${i + 1} blow`, onclick: () => Synth.playMidi(m, { dur: 0.8, instrument: "harmonica" }) }, [harmonicaChart()[i].blow]),
+        el("tr", {}, [el("th", { text: "Furo" }), ...harmonicaChart().map((h) => el("th", { text: String(h.hole) }))]),
+        el("tr", {}, [el("th", { text: "Soprar ↑" }), ...HARMONICA_BLOW.map((m, i) => el("td", {}, [
+          el("button.btn.ghost", { title: `Ouvir furo ${i + 1} soprado`, onclick: () => Synth.playMidi(m, { dur: 0.8, instrument: "harmonica" }) }, [harmonicaChart()[i].blow]),
         ]))]),
-        el("tr", {}, [el("th", { text: "Draw ↓" }), ...HARMONICA_DRAW.map((m, i) => el("td", {}, [
-          el("button.btn.ghost", { title: `Hear hole ${i + 1} draw`, onclick: () => Synth.playMidi(m, { dur: 0.8, instrument: "harmonica" }) }, [harmonicaChart()[i].draw]),
+        el("tr", {}, [el("th", { text: "Puxar ↓" }), ...HARMONICA_DRAW.map((m, i) => el("td", {}, [
+          el("button.btn.ghost", { title: `Ouvir furo ${i + 1} puxado`, onclick: () => Synth.playMidi(m, { dur: 0.8, instrument: "harmonica" }) }, [harmonicaChart()[i].draw]),
         ]))]),
       ]));
     }
@@ -83,13 +83,13 @@ export default function instruments(ctx) {
       body.append(el("h3", { style: { marginTop: "14px" }, text: title }),
         el(ordered ? "ol" : "ul", {}, items.map((t) => el("li", { text: t }))));
     };
-    section("Anatomy", g.anatomy);
-    section("How to play", g.playing, true);
-    section("Techniques", g.techniques);
-    section("Beginner tips", g.tips);
-    if (g.care) { body.append(el("h3", { style: { marginTop: "14px" }, text: "Care" }), el("p", { text: g.care })); }
-    section("In GuitarPicker", [
-      f.panel ? `Play view shows a ${f.panel} fingering hint for every note.` : "Play view grades by pitch alone — no fingering hint for this instrument.",
+    section("Anatomia", g.anatomy);
+    section("Como tocar", g.playing, true);
+    section("Técnicas", g.techniques);
+    section("Dicas para iniciantes", g.tips);
+    if (g.care) { body.append(el("h3", { style: { marginTop: "14px" }, text: "Cuidados" }), el("p", { text: g.care })); }
+    section("No GuitarPicker", [
+      f.panel ? `A tela de tocar mostra uma dica de dedilhado (${f.panel}) para cada nota.` : "A tela de tocar avalia só pela nota — sem dica de dedilhado para este instrumento.",
       ...(g.inApp || []),
     ]);
 

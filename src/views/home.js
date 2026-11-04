@@ -4,6 +4,7 @@ import { allSongs } from "../music/catalog.js";
 import { INSTRUMENTS, instrumentOptions } from "../music/notes.js";
 import { fmtTime } from "../ui/components.js";
 import { dailyActivities, todayKey, streakStatus } from "../music/daily.js";
+import { dif, gen } from "../ui/pt.js";
 import { composeAvatar, composeGuitar, avatarLoadout, guitarLoadout } from "../cosmetics/index.js";
 
 export default function home(ctx) {
@@ -26,7 +27,7 @@ export default function home(ctx) {
   const tunable = (INSTRUMENTS[inst]?.strings.length || 0) > 0;
   const fretted = INSTRUMENTS[inst]?.kind === "fretted";
 
-  root.appendChild(pageHead("Welcome back 🎵", "Pick up where you left off, or explore something new."));
+  root.appendChild(pageHead("Bem-vindo de volta 🎵", "Continue de onde parou ou explore algo novo."));
 
   // hero / continue
   const recent = hist[0];
@@ -34,7 +35,7 @@ export default function home(ctx) {
   // Switching instrument here (not buried in Settings) is what keeps this page
   // about whatever you actually play; everything below keys off it.
   const instSel = select({
-    label: "Current instrument", value: inst,
+    label: "Instrumento atual", value: inst,
     options: instrumentOptions(),
     onchange: (v) => { Store.setSetting("instrument", v); clear(root); home(ctx); },
   });
@@ -42,16 +43,16 @@ export default function home(ctx) {
     el("div.spread", {}, [
       el("div", {}, [
         instSel,
-        el("div.muted", { style: { marginTop: "8px" }, text: `Level ${level} · ${prog.xp || 0} XP` }),
+        el("div.muted", { style: { marginTop: "8px" }, text: `Nível ${level} · ${prog.xp || 0} XP` }),
         el("div", { style: { maxWidth: "320px", marginTop: "8px" } }, [progressBar(levelFrac)]),
       ]),
       el("div.row", {}, [
         recentSong && el("button.btn.primary.lg", { onclick: () => navigate(`#/play/${recentSong.id}`) },
-          [`▶ Continue: ${recentSong.title}`]),
-        el("button.btn.lg", { onclick: () => navigate("#/library") }, ["Browse songs"]),
+          [`▶ Continuar: ${recentSong.title}`]),
+        el("button.btn.lg", { onclick: () => navigate("#/library") }, ["Ver músicas"]),
         tunable
-          ? el("button.btn.lg", { onclick: () => navigate("#/tuner") }, ["🎚️ Tune up"])
-          : el("button.btn.lg", { onclick: () => navigate("#/instruments") }, ["📖 Instrument guide"]),
+          ? el("button.btn.lg", { onclick: () => navigate("#/tuner") }, ["🎚️ Afinar"])
+          : el("button.btn.lg", { onclick: () => navigate("#/instruments") }, ["📖 Guia do instrumento"]),
       ]),
     ]),
   ]));
@@ -68,46 +69,46 @@ export default function home(ctx) {
         // a drummer and call it "your instrument".
         fretted ? el("div", { style: { width: "66px", height: "150px", flex: "none" }, html: composeGuitar(guitarLoadout(), getVar("--accent")) }) : null,
         el("div", {}, [
-          el("h3", { text: "Your setup" }),
+          el("h3", { text: "Seu visual" }),
           el("div.muted", { text: fretted
-            ? "Personalise your avatar, your guitar, and the app skin."
-            : "Personalise your avatar and the app skin." }),
+            ? "Personalize seu avatar, seu violão e o tema do app."
+            : "Personalize seu avatar e o tema do app." }),
         ]),
       ]),
-      el("button.btn.primary", { onclick: () => navigate("#/locker") }, ["🎨 Customize"]),
+      el("button.btn.primary", { onclick: () => navigate("#/locker") }, ["🎨 Personalizar"]),
     ]),
   ]));
 
   // stats
   root.appendChild(el("div.grid.cards", { style: { marginBottom: "16px" } }, [
-    stat(totalSessions, "Sessions"),
-    stat(avgAcc + "%", "Avg accuracy"),
-    stat(fmtTime(totalTime), "Time played"),
-    stat(bestStreak, "Best streak"),
+    stat(totalSessions, "Sessões"),
+    stat(avgAcc + "%", "Precisão média"),
+    stat(fmtTime(totalTime), "Tempo tocado"),
+    stat(bestStreak, "Melhor sequência"),
   ]));
 
   // quick start songs — yours first, topped up with the rest so the row is never
   // empty for an instrument with only a song or two.
-  root.appendChild(el("h2", { text: "Jump back in" }));
+  root.appendChild(el("h2", { text: "Volte a tocar" }));
   const forInst = songs.filter((s) => (s.instrument || "acoustic-guitar") === inst);
   const featured = [...forInst, ...songs.filter((s) => !forInst.includes(s))].slice(0, 6);
   root.appendChild(el("div.grid.cards", {}, featured.map((s) =>
     el("div.card", { onclick: () => navigate(`#/play/${s.id}`) }, [
       el("div.title", { text: s.title }),
       el("div.sub", { text: `${s.artist} · ${INSTRUMENTS[s.instrument]?.name || s.instrument}` }),
-      el("div.row", { style: { gap: "6px", flexWrap: "wrap" } }, [tag(s.difficulty, s.difficulty), s.genre ? tag(s.genre) : null]),
+      el("div.row", { style: { gap: "6px", flexWrap: "wrap" } }, [tag(dif(s.difficulty), s.difficulty), s.genre ? tag(gen(s.genre)) : null]),
     ])
   )));
 
   // tips
   root.appendChild(el("div.panel", { style: { marginTop: "16px" } }, [
-    el("h3", { text: "Getting set up" }),
+    el("h3", { text: "Primeiros passos" }),
     el("ul.muted", {}, [
-      el("li", { html: "Open <b>Settings</b> to pick your microphone & output device, and choose a theme." }),
+      el("li", { html: "Abra as <b>Configurações</b> para escolher o microfone, a saída de som e um tema." }),
       el("li", { html: tunable
-        ? "Use the <b>Tuner</b> before playing — it tells you when a string is out of tune."
-        : "New to this one? The <b>Instruments</b> guide covers how to hold it, first notes, and care." }),
-      el("li", { html: "Build a character and pick an app skin in the <b>Locker</b>." }),
+        ? "Use o <b>Afinador</b> antes de tocar — ele avisa quando uma corda está desafinada."
+        : "Começando agora? O guia de <b>Instrumentos</b> mostra como segurar, as primeiras notas e os cuidados." }),
+      el("li", { html: "Monte seu personagem e escolha um tema no <b>Armário</b>." }),
     ]),
   ]));
 }
@@ -134,11 +135,11 @@ function buildDailyPanel(navigate, instrument) {
   function paintStreak() {
     const ss = streakStatus(Store.settings().streak, today);
     streakChip.innerHTML = ss.count > 0
-      ? `🔥 <b>${ss.count}</b>-day streak${ss.best > ss.count ? ` · best ${ss.best}` : ""}`
-      : "🔥 Start your streak today!";
+      ? `🔥 <b>${ss.count}</b> dia(s) seguidos${ss.best > ss.count ? ` · recorde ${ss.best}` : ""}`
+      : "🔥 Comece sua sequência hoje!";
     streakChip.title = ss.practicedToday
-      ? "Practiced today — streak secured! Come back tomorrow to extend it."
-      : "Play a song today — even a failed run counts — to keep your streak alive. Ticking activities doesn't.";
+      ? "Já praticou hoje — sequência garantida! Volte amanhã para aumentar."
+      : "Toque uma música hoje — mesmo sem terminar, conta — para manter a sequência. Só marcar atividades não conta.";
     streakChip.classList.toggle("cold", ss.count === 0);
   }
 
@@ -147,7 +148,7 @@ function buildDailyPanel(navigate, instrument) {
     // Count only today's actual activities: switching instrument can drop "Tune up"
     // from the list while it's still ticked in storage, which would read "5 / 4".
     const n = acts.filter((a) => done.has(a.id)).length;
-    counter.textContent = `${n} / ${acts.length} done`;
+    counter.textContent = `${n} / ${acts.length} feitas`;
     if (bar.firstChild) bar.firstChild.style.width = (acts.length ? n / acts.length : 0) * 100 + "%";
     paintStreak();
   }
@@ -158,14 +159,14 @@ function buildDailyPanel(navigate, instrument) {
       // NB: ticking an activity gives coins but does NOT touch the streak — only
       // actually playing a song does (Store.addHistory). Keeps it un-gameable.
       if (!rewarded.has(a.id)) { rewarded.add(a.id); Store.addCoins(DAILY_COIN); toast(`+${DAILY_COIN} 🪙 — ${a.title}`, "good"); }
-      if (acts.every((x) => done.has(x.id)) && !bonusPaid) { bonusPaid = true; Store.addCoins(DAILY_BONUS); toast(`Daily complete! +${DAILY_BONUS} 🪙 bonus`, "good"); }
+      if (acts.every((x) => done.has(x.id)) && !bonusPaid) { bonusPaid = true; Store.addCoins(DAILY_BONUS); toast(`Prática do dia completa! +${DAILY_BONUS} 🪙 de bônus`, "good"); }
     }
     persist(); paint(); refresh();
   }
 
   for (const a of acts) {
     const check = el("button.btn");
-    const paint = () => { check.textContent = done.has(a.id) ? "✓ Done" : `Mark done +${DAILY_COIN}🪙`; check.classList.toggle("primary", done.has(a.id)); };
+    const paint = () => { check.textContent = done.has(a.id) ? "✓ Feito" : `Marcar feito +${DAILY_COIN}🪙`; check.classList.toggle("primary", done.has(a.id)); };
     check.addEventListener("click", () => toggle(a, paint));
     paint();
     list.appendChild(el("div.row", { style: { alignItems: "center", gap: "12px" } }, [
@@ -173,7 +174,7 @@ function buildDailyPanel(navigate, instrument) {
         el("div", { html: `${a.icon} <b>${a.title}</b>` }),
         el("div.muted", { style: { fontSize: "12px" }, text: a.desc }),
       ]),
-      el("button.btn.primary", { onclick: () => navigate(a.hash) }, ["Go"]),
+      el("button.btn.primary", { onclick: () => navigate(a.hash) }, ["Ir"]),
       check,
     ]));
   }
@@ -182,9 +183,9 @@ function buildDailyPanel(navigate, instrument) {
   return el("div.panel", { style: { marginBottom: "16px" } }, [
     el("div.spread", {}, [
       el("div.row", { style: { alignItems: "center", gap: "10px" } }, [
-        el("h2", { text: "🗓️ Today's Practice", style: { margin: "0" } }), streakChip,
+        el("h2", { text: "🗓️ Prática de hoje", style: { margin: "0" } }), streakChip,
       ]),
-      el("span.muted", {}, [counter, el("span", { html: ` · complete all for +${DAILY_BONUS} 🪙` })]),
+      el("span.muted", {}, [counter, el("span", { html: ` · complete tudo e ganhe +${DAILY_BONUS} 🪙` })]),
     ]),
     bar, list,
   ]);

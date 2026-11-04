@@ -11,8 +11,8 @@ export function newSong(partial = {}) {
   return {
     v: SONG_VERSION,
     id: partial.id || uid(),
-    title: partial.title || "Untitled",
-    artist: partial.artist || "Unknown / Trad.",
+    title: partial.title || "Sem título",
+    artist: partial.artist || "Desconhecido / tradicional",
     instrument: partial.instrument || "acoustic-guitar",
     key: partial.key ?? "C",
     bpm: partial.bpm || 90,
@@ -82,7 +82,7 @@ export function serialize(song) { return JSON.stringify(song, null, 2); }
 export function parse(text) {
   const o = JSON.parse(text);
   const v = validateSong(o);
-  if (!v.ok) throw new Error("Invalid song: " + v.errors.join(", "));
+  if (!v.ok) throw new Error("Música inválida: " + v.errors.join(", "));
   return newSong(o); // normalize / fill defaults
 }
 
@@ -140,6 +140,8 @@ export function analyzeSong(song) {
     ["auld", "Folk"], ["rising", "Folk"], ["lang syne", "Folk"],
     ["pop", "Pop"], ["progression", "Pop"], ["trainer", "Pop"], ["chord", "Pop"],
     ["country", "Country"], ["honky", "Country"],
+    // títulos traduzidos: mantêm o mesmo gênero que o título em inglês dava
+    ["treino", "Pop"], ["progressão", "Pop"], ["acorde", "Pop"], ["cânone", "Classical"],
   ];
   let genre = null;
   for (const [k, g] of keyword) if (title.includes(k)) { genre = g; break; }

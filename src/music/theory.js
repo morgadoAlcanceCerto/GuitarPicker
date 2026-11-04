@@ -2,19 +2,19 @@
 import { NOTE_SHARP, midiToName } from "./notes.js";
 
 export const INTERVALS = [
-  { semitones: 0, short: "P1", name: "Unison" },
-  { semitones: 1, short: "m2", name: "Minor 2nd" },
-  { semitones: 2, short: "M2", name: "Major 2nd" },
-  { semitones: 3, short: "m3", name: "Minor 3rd" },
-  { semitones: 4, short: "M3", name: "Major 3rd" },
-  { semitones: 5, short: "P4", name: "Perfect 4th" },
-  { semitones: 6, short: "TT", name: "Tritone" },
-  { semitones: 7, short: "P5", name: "Perfect 5th" },
-  { semitones: 8, short: "m6", name: "Minor 6th" },
-  { semitones: 9, short: "M6", name: "Major 6th" },
-  { semitones: 10, short: "m7", name: "Minor 7th" },
-  { semitones: 11, short: "M7", name: "Major 7th" },
-  { semitones: 12, short: "P8", name: "Octave" },
+  { semitones: 0, short: "P1", name: "Uníssono" },
+  { semitones: 1, short: "m2", name: "2ª menor" },
+  { semitones: 2, short: "M2", name: "2ª maior" },
+  { semitones: 3, short: "m3", name: "3ª menor" },
+  { semitones: 4, short: "M3", name: "3ª maior" },
+  { semitones: 5, short: "P4", name: "4ª justa" },
+  { semitones: 6, short: "TT", name: "Trítono" },
+  { semitones: 7, short: "P5", name: "5ª justa" },
+  { semitones: 8, short: "m6", name: "6ª menor" },
+  { semitones: 9, short: "M6", name: "6ª maior" },
+  { semitones: 10, short: "m7", name: "7ª menor" },
+  { semitones: 11, short: "M7", name: "7ª maior" },
+  { semitones: 12, short: "P8", name: "Oitava" },
 ];
 
 // chord formulas as semitone offsets from root

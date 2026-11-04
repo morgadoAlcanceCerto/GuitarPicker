@@ -1,7 +1,7 @@
 {
   "name": "GuitarPicker",
   "short_name": "GuitarPicker",
-  "description": "Learn guitar: play songs with live pitch detection, karaoke, tuner, training and theory games. Local-first, no account.",
+  "description": "Aprenda violão: toque músicas com detecção de nota ao vivo, karaokê, afinador, treinos e jogos de teoria. Tudo no seu aparelho, sem conta.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
@@ -12,8 +12,8 @@
     { "src": "icons/logo.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "maskable" }
   ],
   "shortcuts": [
-    { "name": "Tuner", "url": "./#/tuner", "icons": [{ "src": "icons/logo.svg", "sizes": "any", "type": "image/svg+xml" }] },
-    { "name": "Songs", "url": "./#/library", "icons": [{ "src": "icons/logo.svg", "sizes": "any", "type": "image/svg+xml" }] },
-    { "name": "Progress", "url": "./#/history", "icons": [{ "src": "icons/logo.svg", "sizes": "any", "type": "image/svg+xml" }] }
+    { "name": "Afinador", "url": "./#/tuner", "icons": [{ "src": "icons/logo.svg", "sizes": "any", "type": "image/svg+xml" }] },
+    { "name": "Músicas", "url": "./#/library", "icons": [{ "src": "icons/logo.svg", "sizes": "any", "type": "image/svg+xml" }] },
+    { "name": "Progresso", "url": "./#/history", "icons": [{ "src": "icons/logo.svg", "sizes": "any", "type": "image/svg+xml" }] }
   ]
 }

@@ -5,25 +5,28 @@ import { Audio } from "./audio/engine.js";
 import { SKINS } from "./cosmetics/skins.js";
 
 const NAV = [
-  { sep: "Play" },
-  { route: "home", icon: "🏠", label: "Home" },
-  { route: "library", icon: "🎵", label: "Songs" },
-  { route: "karaoke", icon: "🎤", label: "Karaoke" },
-  { route: "tuner", icon: "🎚️", label: "Tuner" },
-  { sep: "Create" },
-  { route: "editor", icon: "✏️", label: "Song Editor" },
-  { route: "listen", icon: "🎤", label: "Listen & Make" },
-  { sep: "Grow" },
-  { route: "training", icon: "🏋️", label: "Training" },
-  { route: "minigames", icon: "🎮", label: "Theory Games" },
-  { route: "glossary", icon: "📖", label: "Glossary" },
-  { route: "instruments", icon: "🎻", label: "Instruments" },
-  { route: "history", icon: "📈", label: "Progress" },
-  { sep: "You" },
-  { route: "locker", icon: "🧑", label: "Locker" },
-  { sep: "System" },
-  { route: "settings", icon: "⚙️", label: "Settings" },
+  { sep: "Tocar" },
+  { route: "home", icon: "🏠", label: "Início" },
+  { route: "library", icon: "🎵", label: "Músicas" },
+  { route: "karaoke", icon: "🎤", label: "Karaokê" },
+  { route: "tuner", icon: "🎚️", label: "Afinador" },
+  { sep: "Criar" },
+  { route: "editor", icon: "✏️", label: "Editor de músicas" },
+  { route: "listen", icon: "👂", label: "Ouvir e criar" },
+  { sep: "Evoluir" },
+  { route: "training", icon: "🏋️", label: "Treinos" },
+  { route: "minigames", icon: "🎮", label: "Jogos de teoria" },
+  { route: "glossary", icon: "📖", label: "Glossário" },
+  { route: "instruments", icon: "🎻", label: "Instrumentos" },
+  { route: "history", icon: "📈", label: "Progresso" },
+  { sep: "Você" },
+  { route: "locker", icon: "🧑", label: "Armário" },
+  { sep: "Sistema" },
+  { route: "settings", icon: "⚙️", label: "Configurações" },
 ];
+
+// nome curto para a barra de baixo do celular
+const CURTO = { editor: "Editor", listen: "Ouvir", minigames: "Teoria", instruments: "Instrum.", settings: "Ajustes" };
 
 const VIEWS = {
   home: () => import("./views/home.js"),
@@ -55,7 +58,7 @@ function buildNav() {
   for (const item of NAV) {
     if (item.sep) { nav.appendChild(el("div.nav-sep", { text: item.sep })); continue; }
     const a = el("a.nav-item", { href: `#/${item.route}` }, [
-      el("span.ico", { text: item.icon }), el("span", { text: item.label }),
+      el("span.ico", { text: item.icon }), el("span", { text: item.label, "data-curto": CURTO[item.route] || item.label }),
     ]);
     a.dataset.route = item.route;
     nav.appendChild(a);
@@ -101,7 +104,7 @@ async function router() {
   } catch (e) {
     console.error(e);
     container.appendChild(el("div.panel", {}, [
-      el("h2", { text: "View failed to load" }),
+      el("h2", { text: "Não foi possível abrir esta tela" }),
       el("pre", { text: String(e && e.stack || e) }),
     ]));
   }
@@ -113,8 +116,8 @@ function refreshIO() {
   const outLabel = document.querySelector('[data-io="out"]');
   const dot = document.querySelector(".io-dot.in");
   const io = Audio.currentDevices();
-  inLabel.textContent = io.input || "no mic";
-  outLabel.textContent = io.output || "default out";
+  inLabel.textContent = io.input || "sem microfone";
+  outLabel.textContent = io.output || "saída padrão";
   dot.classList.toggle("live", io.micLive);
 }
 Audio.onChange(refreshIO);
@@ -128,10 +131,10 @@ Store.on((e) => { if (e.type === "coins" || e.type === "history" || e.type === "
 
 // crumb helper available to views via title attribute on #crumb
 const crumbTitles = {
-  home: "Home", library: "Songs", play: "Now Playing", karaoke: "Karaoke", tuner: "Tuner",
-  editor: "Song Editor", listen: "Listen & Make", training: "Training",
-  minigames: "Theory Games", glossary: "Glossary", instruments: "Instruments", history: "Progress",
-  locker: "Locker", settings: "Settings",
+  home: "Início", library: "Músicas", play: "Tocando agora", karaoke: "Karaokê", tuner: "Afinador",
+  editor: "Editor de músicas", listen: "Ouvir e criar", training: "Treinos",
+  minigames: "Jogos de teoria", glossary: "Glossário", instruments: "Instrumentos", history: "Progresso",
+  locker: "Armário", settings: "Configurações",
 };
 function refreshCrumb() {
   const { route } = parseHash();

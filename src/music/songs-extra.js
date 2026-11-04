@@ -25,7 +25,7 @@ function builtin(o) { return newSong({ ...o, source: "builtin" }); }
 export const EXTRA_SONGS = [
   // ===== Guitar — chord progressions & patterns (correct by construction) =====
   builtin({
-    id: "bi-12bar-e", title: "12-Bar Blues in E", artist: "Trad. (blues form)",
+    id: "bi-12bar-e", title: "Blues de 12 compassos em E", artist: "Tradicional (forma de blues)",
     key: "E", bpm: 100, difficulty: "intermediate",
     background: { type: "animated", value: "starfield" },
     notes: chordSeq(100, [
@@ -35,7 +35,7 @@ export const EXTRA_SONGS = [
     ]),
   }),
   builtin({
-    id: "bi-doowop", title: "Doo-Wop Progression I–vi–IV–V (C)", artist: "GuitarPicker",
+    id: "bi-doowop", title: "Progressão doo-wop I–vi–IV–V (C)", artist: "GuitarPicker",
     key: "C", bpm: 96, difficulty: "beginner",
     background: { type: "animated", value: "waves" },
     notes: chordSeq(96, [
@@ -44,7 +44,7 @@ export const EXTRA_SONGS = [
     ]),
   }),
   builtin({
-    id: "bi-andalusian", title: "Andalusian Cadence (Am–G–F–E)", artist: "Trad. (Spanish form)",
+    id: "bi-andalusian", title: "Cadência andaluza (Am–G–F–E)", artist: "Tradicional (forma espanhola)",
     key: "Am", bpm: 100, difficulty: "intermediate",
     background: { type: "animated", value: "aurora" },
     notes: chordSeq(100, [
@@ -53,7 +53,7 @@ export const EXTRA_SONGS = [
     ]),
   }),
   builtin({
-    id: "bi-canon-strum", title: "Pachelbel Strum Loop (D)", artist: "Pachelbel (chord loop)",
+    id: "bi-canon-strum", title: "Batida em loop de Pachelbel (D)", artist: "Pachelbel (loop de acordes)",
     key: "D", bpm: 96, difficulty: "intermediate",
     background: { type: "animated", value: "aurora" },
     notes: chordSeq(96, [
@@ -62,7 +62,7 @@ export const EXTRA_SONGS = [
     ]),
   }),
   builtin({
-    id: "bi-minor-blues", title: "Minor 12-Bar Blues in Am", artist: "Trad. (blues form)",
+    id: "bi-minor-blues", title: "Blues menor de 12 compassos em Am", artist: "Tradicional (forma de blues)",
     key: "Am", bpm: 92, difficulty: "intermediate",
     background: { type: "animated", value: "starfield" },
     notes: chordSeq(92, [
@@ -72,7 +72,7 @@ export const EXTRA_SONGS = [
     ]),
   }),
   builtin({
-    id: "bi-251", title: "Jazz ii–V–I Loop (C)", artist: "GuitarPicker",
+    id: "bi-251", title: "Loop jazz ii–V–I (C)", artist: "GuitarPicker",
     key: "C", bpm: 100, difficulty: "advanced",
     background: { type: "animated", value: "aurora" },
     notes: chordSeq(100, [
@@ -81,7 +81,7 @@ export const EXTRA_SONGS = [
     ]),
   }),
   builtin({
-    id: "bi-folk-d", title: "Folk Trainer I–IV–V (D)", artist: "GuitarPicker",
+    id: "bi-folk-d", title: "Treino folk I–IV–V (D)", artist: "GuitarPicker",
     key: "D", bpm: 96, difficulty: "beginner",
     background: { type: "solid", value: "" },
     notes: chordSeq(96, [
@@ -90,7 +90,7 @@ export const EXTRA_SONGS = [
     ]),
   }),
   builtin({
-    id: "bi-travis", title: "Travis Picking Pattern (C–Am–F–G)", artist: "GuitarPicker",
+    id: "bi-travis", title: "Dedilhado Travis (C–Am–F–G)", artist: "GuitarPicker",
     key: "C", bpm: 100, difficulty: "intermediate",
     background: { type: "animated", value: "pulse" },
     notes: parseMelody(100,
@@ -103,7 +103,7 @@ export const EXTRA_SONGS = [
   // ===== Singalong — public-domain melodies + lyrics (word-timed) =====
   // melodies tagged "verify-melody" pending an ear-check.
   builtin({
-    id: "bi-hotcross", title: "Hot Cross Buns", artist: "Trad.",
+    id: "bi-hotcross", title: "Hot Cross Buns", artist: "Tradicional",
     key: "C", bpm: 100, difficulty: "beginner", genre: "Children's", tags: ["verify-melody"],
     background: { type: "animated", value: "pulse" },
     notes: parseMelody(100,
@@ -116,7 +116,7 @@ export const EXTRA_SONGS = [
     ],
   }),
   builtin({
-    id: "bi-joy", title: "Joy to the World", artist: "Handel / Watts",
+    id: "bi-joy", title: "Joy to the World", artist: "Händel / Watts",
     key: "C", bpm: 100, difficulty: "beginner", genre: "Holiday", tags: ["verify-melody"],
     background: { type: "animated", value: "aurora" },
     notes: parseMelody(100, "C5:1 B4:1 A4:1 G4:1.5 F4:0.5 E4:1 D4:1 C4:2"),
@@ -127,7 +127,7 @@ export const EXTRA_SONGS = [
     ],
   }),
   builtin({
-    id: "bi-wewish", title: "We Wish You a Merry Christmas", artist: "Trad.",
+    id: "bi-wewish", title: "We Wish You a Merry Christmas", artist: "Tradicional",
     key: "G", bpm: 120, difficulty: "beginner", genre: "Holiday", tags: ["verify-melody"],
     background: { type: "animated", value: "starfield" },
     notes: parseMelody(120, "D4:1 G4:1 G4:0.5 A4:0.5 G4:1 F#4:2 E4:0.5 E4:0.5 D4:1 D4:1 G4:2"),
@@ -139,7 +139,7 @@ export const EXTRA_SONGS = [
     ],
   }),
   builtin({
-    id: "bi-mountain", title: "She'll Be Coming 'Round the Mountain", artist: "Trad.",
+    id: "bi-mountain", title: "She'll Be Coming 'Round the Mountain", artist: "Tradicional",
     key: "C", bpm: 120, difficulty: "beginner", genre: "Folk", tags: ["verify-melody"],
     background: { type: "animated", value: "waves" },
     notes: parseMelody(120,
@@ -153,7 +153,7 @@ export const EXTRA_SONGS = [
     ],
   }),
   builtin({
-    id: "bi-clementine", title: "Oh My Darling, Clementine", artist: "Trad.",
+    id: "bi-clementine", title: "Oh My Darling, Clementine", artist: "Tradicional",
     key: "C", bpm: 120, difficulty: "beginner", genre: "Folk", tags: ["verify-melody"],
     background: { type: "animated", value: "aurora" },
     notes: parseMelody(120, "G3:0.5 G3:0.5 C4:1 E4:0.5 E4:0.5 C4:1 G3:0.5 G3:0.5 C4:1 E4:0.5 D4:0.5 C4:2"),
@@ -165,7 +165,7 @@ export const EXTRA_SONGS = [
     ],
   }),
   builtin({
-    id: "bi-camptown", title: "Camptown Races", artist: "Stephen Foster (Trad.)",
+    id: "bi-camptown", title: "Camptown Races", artist: "Stephen Foster (tradicional)",
     key: "C", bpm: 120, difficulty: "intermediate", genre: "Folk", tags: ["verify-melody"],
     background: { type: "animated", value: "pulse" },
     notes: parseMelody(120, "G4:1 E4:1 G4:0.5 A4:0.5 G4:1 E4:1 D4:1 E4:1 C4:1"),
@@ -177,7 +177,7 @@ export const EXTRA_SONGS = [
     ],
   }),
   builtin({
-    id: "bi-valley", title: "Down in the Valley", artist: "Trad.",
+    id: "bi-valley", title: "Down in the Valley", artist: "Tradicional",
     key: "C", bpm: 120, difficulty: "beginner", genre: "Folk", tags: ["verify-melody"],
     background: { type: "animated", value: "aurora" },
     notes: parseMelody(120,
@@ -191,7 +191,7 @@ export const EXTRA_SONGS = [
     ],
   }),
   builtin({
-    id: "bi-michael", title: "Michael, Row the Boat Ashore", artist: "Trad. (spiritual)",
+    id: "bi-michael", title: "Michael, Row the Boat Ashore", artist: "Tradicional (spiritual)",
     key: "C", bpm: 100, difficulty: "beginner", genre: "Hymn/Gospel", tags: ["verify-melody"],
     background: { type: "animated", value: "waves" },
     notes: parseMelody(100, "C4:1 E4:1 G4:0.5 G4:0.5 E4:1 G4:2 C4:1 E4:1 G4:0.5 G4:0.5 E4:1 G4:2"),
@@ -203,7 +203,7 @@ export const EXTRA_SONGS = [
     ],
   }),
   builtin({
-    id: "bi-deckhalls", title: "Deck the Halls", artist: "Trad. (Welsh)",
+    id: "bi-deckhalls", title: "Deck the Halls", artist: "Tradicional (galesa)",
     key: "C", bpm: 120, difficulty: "intermediate", genre: "Holiday", tags: ["verify-melody"],
     background: { type: "animated", value: "starfield" },
     notes: parseMelody(120,
@@ -217,7 +217,7 @@ export const EXTRA_SONGS = [
     ],
   }),
   builtin({
-    id: "bi-kumbaya", title: "Kumbaya", artist: "Trad. (spiritual)",
+    id: "bi-kumbaya", title: "Kumbaya", artist: "Tradicional (spiritual)",
     key: "C", bpm: 100, difficulty: "beginner", genre: "Hymn/Gospel", tags: ["verify-melody"],
     background: { type: "animated", value: "aurora" },
     notes: parseMelody(100, "C4:1 E4:0.5 G4:1 G4:1.5 C4:1 E4:0.5 G4:1 G4:1.5"),
@@ -229,7 +229,7 @@ export const EXTRA_SONGS = [
     ],
   }),
   builtin({
-    id: "bi-muffin", title: "The Muffin Man", artist: "Trad.",
+    id: "bi-muffin", title: "The Muffin Man", artist: "Tradicional",
     key: "C", bpm: 120, difficulty: "beginner", genre: "Children's", tags: ["verify-melody"],
     background: { type: "animated", value: "pulse" },
     notes: parseMelody(120, "C4:0.5 D4:0.5 E4:1 D4:0.5 C4:0.5 G4:1 G4:0.5 A4:0.5 G4:1 F4:0.5 E4:0.5 D4:1"),
@@ -241,7 +241,7 @@ export const EXTRA_SONGS = [
     ],
   }),
   builtin({
-    id: "bi-skiplou", title: "Skip to My Lou", artist: "Trad.",
+    id: "bi-skiplou", title: "Skip to My Lou", artist: "Tradicional",
     key: "C", bpm: 120, difficulty: "beginner", genre: "Folk", tags: ["verify-melody"],
     background: { type: "animated", value: "waves" },
     notes: parseMelody(120, "G4:1 G4:1 E4:0.5 G4:0.5 G4:0.5 E4:1.5 G4:0.5 G4:0.5 E4:0.5 G4:1 D4:0.5 E4:1.5"),
@@ -253,7 +253,7 @@ export const EXTRA_SONGS = [
     ],
   }),
   builtin({
-    id: "bi-yankee", title: "Yankee Doodle", artist: "Trad.",
+    id: "bi-yankee", title: "Yankee Doodle", artist: "Tradicional",
     key: "C", bpm: 120, difficulty: "beginner", genre: "Folk", tags: ["verify-melody"],
     background: { type: "solid", value: "" },
     notes: parseMelody(120, "C4:1 C4:1 D4:0.5 E4:0.5 C4:1 E4:1 D4:1 D4:0.5 C4:1.5"),
@@ -265,7 +265,7 @@ export const EXTRA_SONGS = [
     ],
   }),
   builtin({
-    id: "bi-firstnoel", title: "The First Noel", artist: "Trad.",
+    id: "bi-firstnoel", title: "The First Noel", artist: "Tradicional",
     key: "C", bpm: 100, difficulty: "intermediate", genre: "Holiday", tags: ["verify-melody"],
     background: { type: "animated", value: "aurora" },
     notes: parseMelody(100, "E4:0.5 E4:1 D4:1 C4:0.5 D4:0.5 E4:1 F4:1 G4:1 F4:1 E4:1 D4:1"),
@@ -277,7 +277,7 @@ export const EXTRA_SONGS = [
     ],
   }),
   builtin({
-    id: "bi-otannenbaum", title: "O Christmas Tree", artist: "Trad. (German)",
+    id: "bi-otannenbaum", title: "O Christmas Tree", artist: "Tradicional (alemã)",
     key: "C", bpm: 100, difficulty: "beginner", genre: "Holiday", tags: ["verify-melody"],
     background: { type: "animated", value: "starfield" },
     notes: parseMelody(100, "G3:0.5 C4:1 C4:1 C4:0.5 D4:1 D4:1 B3:0.5 E4:1 D4:0.5 D4:0.5 C4:1.5"),
@@ -289,7 +289,7 @@ export const EXTRA_SONGS = [
     ],
   }),
   builtin({
-    id: "bi-buffalogals", title: "Buffalo Gals", artist: "Trad.",
+    id: "bi-buffalogals", title: "Buffalo Gals", artist: "Tradicional",
     key: "C", bpm: 120, difficulty: "intermediate", genre: "Folk", tags: ["verify-melody"],
     background: { type: "animated", value: "pulse" },
     notes: parseMelody(120,
@@ -302,7 +302,7 @@ export const EXTRA_SONGS = [
     ],
   }),
   builtin({
-    id: "bi-homerange", title: "Home on the Range", artist: "Trad.",
+    id: "bi-homerange", title: "Home on the Range", artist: "Tradicional",
     key: "C", bpm: 120, difficulty: "intermediate", genre: "Country", tags: ["verify-melody"],
     background: { type: "animated", value: "aurora" },
     notes: parseMelody(120,

@@ -99,7 +99,7 @@ export function lineChart(canvas, series, opts = {}) {
   const all = series.flatMap((s) => s.points);
   if (!all.length) {
     ctx.fillStyle = getVar("--muted"); ctx.font = "13px var(--font)";
-    ctx.fillText("No data yet — play a song to start trending.", pad.l, h / 2);
+    ctx.fillText("Ainda sem dados — toque uma música para começar o gráfico.", pad.l, h / 2);
     return;
   }
   const xs = all.map((p) => p.x), ys = all.map((p) => p.y);

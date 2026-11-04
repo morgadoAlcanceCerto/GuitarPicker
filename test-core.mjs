@@ -41,7 +41,7 @@ ok("guide covers every instrument", Object.keys(INSTRUMENTS).every((id) => GUIDE
 ok("guide guitar range E2 - C6", instrumentFacts("acoustic-guitar").range === "E2 – C6");
 ok("guide harmonica range C4 - C7", instrumentFacts("harmonica").range === "C4 – C7");
 ok("hole strip is harmonica-only, not all winds", instrumentFacts("flute").panel === null);
-ok("drums are unpitched in the guide", instrumentFacts("e-drums").range.startsWith("Unpitched"));
+ok("drums are unpitched in the guide", instrumentFacts("e-drums").range.startsWith("Sem altura definida"));
 const guideMd = buildInstrumentsMarkdown();
 ok("guide md mentions every instrument", Object.values(INSTRUMENTS).every((i) => guideMd.includes(`## ${i.name}`)));
 ok("docs/INSTRUMENTS.md in sync (else run: node gen-docs.mjs)",
@@ -256,8 +256,8 @@ ok("merge of empties is safe", mergeSyncable(null, null).songs.length === 0);
   ok("harmonica has nothing to tune", !harp.some((a) => a.id === "tune"));
   ok("drums have nothing to tune", !drums.some((a) => a.id === "tune"));
   const songOf = (acts) => acts.find((a) => a.id === "song");
-  ok("harmonica's daily song is a harmonica song", songOf(harp).title.includes("Harmonica"));
-  ok("drums' daily song is the drum song", songOf(drums).title.includes("Drums"));
+  ok("harmonica's daily song is a harmonica song", songOf(harp).title.includes("gaita"));
+  ok("drums' daily song is the drum song", songOf(drums).title.includes("bateria"));
   ok("pitched instruments get a full plan", [gtr, harp].every((p) => p.length >= 4));
   ok("drums get no pitch warm-up (no percussion drills exist)", !drums.some((a) => a.id === "warmup"));
   ok("drums still get a usable plan", drums.length >= 3 && drums.some((a) => a.id === "song"));

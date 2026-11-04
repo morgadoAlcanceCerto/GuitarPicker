@@ -6,10 +6,10 @@ import { Synth } from "../audio/synth.js";
 
 export default function glossary(ctx) {
   const { el: root } = ctx;
-  root.appendChild(pageHead("Glossary & Reference", "A music dictionary plus interactive theory tools — hear intervals, chords, and scales."));
+  root.appendChild(pageHead("Glossário e referência", "Um dicionário de música mais ferramentas de teoria — ouça intervalos, acordes e escalas."));
 
   // ---- interactive reference ----
-  const ref = el("div.panel", {}, [el("h2", { text: "Interactive reference" })]);
+  const ref = el("div.panel", {}, [el("h2", { text: "Referência interativa" })]);
   root.appendChild(ref);
 
   // Chord explorer
@@ -39,13 +39,13 @@ export default function glossary(ctx) {
   ref.append(
     el("div.grid", { style: { gridTemplateColumns: "1fr 1fr" } }, [
       el("div.panel.tight", { style: { background: "var(--panel-2)" } }, [
-        el("h3", { text: "Chord explorer" }),
-        el("div.row", {}, [cRoot, cType, el("button.btn", { onclick: () => playChord() }, ["🔊 Play"])]),
+        el("h3", { text: "Explorador de acordes" }),
+        el("div.row", {}, [cRoot, cType, el("button.btn", { onclick: () => playChord() }, ["🔊 Tocar"])]),
         el("div", { style: { marginTop: "8px" } }, [chordOut]),
       ]),
       el("div.panel.tight", { style: { background: "var(--panel-2)" } }, [
-        el("h3", { text: "Scale explorer" }),
-        el("div.row", {}, [sRoot, sType, el("button.btn", { onclick: () => playScale() }, ["🔊 Play"])]),
+        el("h3", { text: "Explorador de escalas" }),
+        el("div.row", {}, [sRoot, sType, el("button.btn", { onclick: () => playScale() }, ["🔊 Tocar"])]),
         el("div", { style: { marginTop: "8px" } }, [scaleOut]),
       ]),
     ]),
@@ -64,30 +64,30 @@ export default function glossary(ctx) {
 
   // Interval table
   const ivTable = el("table.data", {}, [
-    el("tr", {}, [el("th", { text: "Interval" }), el("th", { text: "Semitones" }), el("th", { text: "" })]),
+    el("tr", {}, [el("th", { text: "Intervalo" }), el("th", { text: "Semitons" }), el("th", { text: "" })]),
     ...INTERVALS.map((iv) => el("tr", {}, [
       el("td", { text: `${iv.name} (${iv.short})` }), el("td", { text: iv.semitones }),
       el("td", {}, [el("button.btn.ghost", { onclick: () => { Synth.playMidi(60); setTimeout(() => Synth.playMidi(60 + iv.semitones), 250); } }, ["▶"])]),
     ])),
   ]);
   ref.appendChild(el("details", { style: { marginTop: "14px" } }, [
-    el("summary", { html: "<b>Intervals</b> — click ▶ to hear each one" }), ivTable,
+    el("summary", { html: "<b>Intervalos</b> — clique em ▶ para ouvir cada um" }), ivTable,
   ]));
 
   // Circle of fifths
   ref.appendChild(el("details", {}, [
-    el("summary", { html: "<b>Circle of fifths</b>" }),
+    el("summary", { html: "<b>Ciclo das quintas</b>" }),
     el("div.pill-row", { style: { marginTop: "8px" } }, CIRCLE_OF_FIFTHS.map((k) => el("span.pill", { text: k }))),
-    el("p.muted", { style: { fontSize: "12px" }, text: "Clockwise adds sharps; counter-clockwise adds flats. Neighbours share most notes and sound good together." }),
+    el("p.muted", { style: { fontSize: "12px" }, text: "No sentido horário ganha sustenidos; no anti-horário, bemóis. Tons vizinhos têm quase as mesmas notas e soam bem juntos." }),
   ]));
 
   // ---- dictionary ----
-  root.appendChild(pageHead("Dictionary", null));
+  root.appendChild(pageHead("Dicionário", null));
   let q = "", catFilter = "all";
-  const search = el("input.input", { type: "search", placeholder: "Search terms…", oninput: (e) => { q = e.target.value.toLowerCase(); renderTerms(); } });
+  const search = el("input.input", { type: "search", placeholder: "Buscar termos…", oninput: (e) => { q = e.target.value.toLowerCase(); renderTerms(); } });
   const cats = el("div.pill-row", {}, ["all", ...CATEGORIES].map((cat) =>
-    el(`span.pill${cat === "all" ? ".active" : ""}`, { text: cat, onclick: () => {
-      catFilter = cat; [...cats.children].forEach((p) => p.classList.toggle("active", p.textContent === cat)); renderTerms(); } })));
+    el(`span.pill${cat === "all" ? ".active" : ""}`, { text: cat === "all" ? "todos" : cat, "data-cat": cat, onclick: () => {
+      catFilter = cat; [...cats.children].forEach((p) => p.classList.toggle("active", p.dataset.cat === cat)); renderTerms(); } })));
   root.appendChild(el("div.panel.tight", { style: { marginBottom: "14px" } }, [
     el("div.row", { style: { alignItems: "center" } }, [el("div", { style: { flex: 1 } }, [search]), cats]),
   ]));
@@ -99,7 +99,7 @@ export default function glossary(ctx) {
     const list = GLOSSARY.filter(([term, cat, def]) =>
       (catFilter === "all" || cat === catFilter) &&
       (!q || term.toLowerCase().includes(q) || def.toLowerCase().includes(q)));
-    if (!list.length) { terms.appendChild(el("p.muted", { text: "No matching terms." })); return; }
+    if (!list.length) { terms.appendChild(el("p.muted", { text: "Nenhum termo encontrado." })); return; }
     for (const [term, cat, def] of list) {
       terms.appendChild(el("div.card", { style: { cursor: "default" } }, [
         el("div.spread", {}, [el("div.title", { text: term }), tag(cat)]),

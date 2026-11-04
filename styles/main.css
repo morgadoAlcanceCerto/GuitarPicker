@@ -361,7 +361,7 @@ table.data tr:hover td { background: var(--panel-2); }
    fade out. Pure CSS — no element, no timer, gone the moment you rotate. */
 @media (max-width: 700px) and (orientation: portrait) {
   .play-shell::after {
-    content: "↻ Rotate for more of the note highway";
+    content: "↻ Gire o celular para ver mais da pista de notas";
     position: absolute; left: 50%; bottom: 92px; transform: translateX(-50%);
     background: rgba(0,0,0,.6); border: 1px solid var(--line); border-radius: 999px;
     padding: 7px 15px; font-size: 13px; white-space: nowrap; pointer-events: none;
@@ -369,3 +369,56 @@ table.data tr:hover td { background: var(--panel-2); }
   }
 }
 @keyframes hint-fade { 0%, 70% { opacity: 1; } 100% { opacity: 0; } }
+
+/* ---------- Celular (pt-BR): ajustes de toque e de leitura ----------
+   Barra de baixo com nome embaixo do ícone, cabeçalhos e filtros empilhados,
+   botões de largura cheia e alvos de toque de pelo menos 40–44px. */
+@media (max-width: 560px) {
+  /* barra de baixo: ícone + nome curto, para não ser adivinhação */
+  #sidebar { padding: 0; padding-bottom: env(safe-area-inset-bottom); }
+  #nav { scroll-snap-type: x proximity; }
+  .nav-item { flex-direction: column; gap: 2px; padding: 7px 4px 6px; min-width: 66px; scroll-snap-align: start; }
+  .nav-item .ico { font-size: 20px; width: auto; }
+  .nav-item span:not(.ico) { display: block; font-size: 10px; line-height: 1.15; white-space: nowrap;
+    max-width: 64px; overflow: hidden; text-overflow: ellipsis; }
+  .nav-item.active { color: var(--text); }
+  .nav-item span[data-curto] { font-size: 0; }
+  .nav-item span[data-curto]::after { content: attr(data-curto); font-size: 10px; }
+
+  /* título da página em cima, ações embaixo e de largura cheia */
+  .page-head.spread { flex-direction: column; align-items: stretch; gap: 12px; }
+  .page-head.spread > .row { width: 100%; flex-wrap: nowrap; }
+  .page-head.spread > .row > .btn { flex: 1; }
+  .page-head h1 { font-size: 24px; line-height: 1.2; }
+
+  /* painéis com conteúdo à esquerda e botões à direita viram uma coluna */
+  .panel > .spread { flex-direction: column; align-items: stretch; gap: 12px; }
+  .panel > .spread > .row { width: 100%; }
+  .panel > .spread > .row > .btn { flex: 1 1 auto; }
+
+  /* filtros e campos ocupam a linha toda */
+  .panel .row > .input, .panel .row > select.input,
+  .panel .row > div[style*="flex: 1"], .panel .row > label.field { flex: 1 1 100%; min-width: 0 !important; width: 100%; }
+  input.input, select.input, textarea.input { width: 100%; font-size: 16px; } /* 16px evita o zoom automático do iPhone */
+
+  /* listas com texto + botões (prática do dia, treinos): texto em cima, botões embaixo */
+  .col > .row > div:first-child { flex: 1 1 100% !important; }
+  .col > .row > .btn { flex: 1; }
+
+  /* pílulas grandes o bastante para o dedo */
+  .pill { min-height: 40px; display: inline-flex; align-items: center; padding: 8px 14px; font-size: 14px; }
+  .pill-row { gap: 8px; }
+
+  /* números lado a lado em duas colunas em vez de um por linha */
+  .grid.cards:has(> .stat) { grid-template-columns: 1fr 1fr !important; }
+  .stat .num { font-size: 20px; }
+
+  /* afinador: nota grande, botões das cordas fáceis de tocar */
+  /* as 7 bolinhas (Auto + 6 cordas) cabem numa linha só num celular de 375px */
+  .string-row { gap: 5px; flex-wrap: nowrap; }
+  .string-btn { width: 43px; height: 43px; font-size: 15px; flex: none; }
+
+  /* tabelas largas rolam dentro do painel */
+  .panel table { min-width: 100%; }
+}
+

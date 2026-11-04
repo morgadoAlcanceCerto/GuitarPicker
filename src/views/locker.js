@@ -16,11 +16,11 @@ import {
 export default function locker(ctx) {
   const { el: root } = ctx;
   const head = pageHead(
-    "Locker",
-    "Build your player, customise a guitar, and pick an app skin. Earn 🪙 coins by playing; spend them to unlock rare gear."
+    "Armário",
+    "Monte seu personagem, personalize um violão e escolha o tema do app. Ganhe 🪙 moedas tocando e gaste para desbloquear itens raros."
   );
   // coin balance chip in the page header
-  const coinChip = el("div.coin-chip", { title: "Coins — earn by playing songs" });
+  const coinChip = el("div.coin-chip", { title: "Moedas — ganhe tocando músicas" });
   head.querySelector(".row")?.appendChild(coinChip);
   root.appendChild(head);
   const paintCoins = () => { coinChip.innerHTML = `🪙 <b>${coins().toLocaleString()}</b>`; };
@@ -31,8 +31,8 @@ export default function locker(ctx) {
   if (unlockedCount() === 0 && !Store.settings().lockerTipDismissed) {
     tipEl = el("div.panel.tight", { style: { borderColor: "var(--accent)", marginBottom: "14px", display: "flex", alignItems: "center", gap: "12px" } }, [
       el("div", { style: { flex: "1", fontSize: "13px" },
-        html: "💡 <b>New here?</b> Items marked 🔒 unlock with coins you earn by playing songs and finishing daily practice. Tap a locked item to unlock it — colours are always free." }),
-      el("button.btn.ghost", { onclick: () => { Store.setSetting("lockerTipDismissed", true); if (tipEl) { tipEl.remove(); tipEl = null; } } }, ["Got it ✕"]),
+        html: "💡 <b>Novo por aqui?</b> Itens com 🔒 se desbloqueiam com moedas que você ganha tocando músicas e completando a prática do dia. Toque num item bloqueado para desbloquear — as cores são sempre grátis." }),
+      el("button.btn.ghost", { onclick: () => { Store.setSetting("lockerTipDismissed", true); if (tipEl) { tipEl.remove(); tipEl = null; } } }, ["Entendi ✕"]),
     ]);
     root.appendChild(tipEl);
   }
@@ -42,7 +42,7 @@ export default function locker(ctx) {
     if (e.type === "unlocks" && tipEl) { tipEl.remove(); tipEl = null; }   // first unlock dismisses the nudge
   });
 
-  const TABS = [["player", "🧑 Player"], ["guitar", "🎸 Guitar"], ["skin", "🎨 App Skin"]];
+  const TABS = [["player", "🧑 Personagem"], ["guitar", "🎸 Violão"], ["skin", "🎨 Tema do app"]];
   let active = "player";
   const tabBar = el("div.pill-row", { style: { marginBottom: "18px" } });
   const body = el("div");
@@ -94,11 +94,11 @@ export default function locker(ctx) {
     };
 
     const previewPanel = el("div.panel", { style: { width: "300px", flex: "none" } }, [
-      el("h3", { text: isAvatar ? "Your Player" : "Your Guitar" }),
+      el("h3", { text: isAvatar ? "Seu personagem" : "Seu violão" }),
       previewBox,
       el("div.row", { style: { marginTop: "12px" } }, [
-        el("button.btn", { onclick: randomize }, ["🎲 Randomize"]),
-        el("button.btn.ghost", { onclick: () => { setLoadout({}); renderBody(); } }, ["↺ Reset"]),
+        el("button.btn", { onclick: randomize }, ["🎲 Sortear"]),
+        el("button.btn.ghost", { onclick: () => { setLoadout({}); renderBody(); } }, ["↺ Restaurar"]),
       ]),
     ]);
 
@@ -137,13 +137,13 @@ export default function locker(ctx) {
         ]);
 
     return el("div", {
-      title: owned ? `${item.name} · ${r.name}` : `${item.name} · ${r.name} — unlock for ${price} coins`,
+      title: owned ? `${item.name} · ${r.name}` : `${item.name} · ${r.name} — desbloqueie por ${price} moedas`,
       style: optStyle(isActive),
       onclick: () => {
         if (owned) { setPart(key, item.id); renderBody(); return; }
         const res = buyItem(kind, key, item);
-        if (res.ok) { toast(`Unlocked ${item.name}! 🪙 −${res.price}`, "good"); setPart(key, item.id); renderBody(); }
-        else { toast(`Need ${res.price} coins (you have ${coins()}). Play songs to earn more.`, "bad"); }
+        if (res.ok) { toast(`${item.name} desbloqueado! 🪙 −${res.price}`, "good"); setPart(key, item.id); renderBody(); }
+        else { toast(`Precisa de ${res.price} moedas (você tem ${coins()}). Toque músicas para ganhar mais.`, "bad"); }
       },
     }, [thumb, footer]);
   }
@@ -191,8 +191,8 @@ export default function locker(ctx) {
         ]),
         el("div.sub", { text: sk.desc }),
         isActive
-          ? el("div", { style: { fontSize: "11px", color: ac, marginTop: "6px", fontWeight: "600" }, text: "✓ Active" })
-          : (owned ? null : el("div", { style: { fontSize: "11px", color: "var(--warn)", marginTop: "6px", fontWeight: "700" }, text: `🔒 Unlock · 🪙 ${price}` })),
+          ? el("div", { style: { fontSize: "11px", color: ac, marginTop: "6px", fontWeight: "600" }, text: "✓ Ativo" })
+          : (owned ? null : el("div", { style: { fontSize: "11px", color: "var(--warn)", marginTop: "6px", fontWeight: "700" }, text: `🔒 Desbloquear · 🪙 ${price}` })),
       ]));
     }
     container.appendChild(grid);
@@ -201,14 +201,14 @@ export default function locker(ctx) {
   function onSkin(sk, owned, price) {
     if (!owned) {
       const res = buyItem("skin", "", sk);
-      if (!res.ok) { toast(`Need ${res.price} coins (you have ${coins()}). Play songs to earn more.`, "bad"); return; }
-      toast(`Unlocked “${sk.name}” skin! 🪙 −${res.price}`, "good");
+      if (!res.ok) { toast(`Precisa de ${res.price} moedas (você tem ${coins()}). Toque músicas para ganhar mais.`, "bad"); return; }
+      toast(`Tema “${sk.name}” desbloqueado! 🪙 −${res.price}`, "good");
     }
     Store.setSetting("theme", sk.id);
     document.documentElement.setAttribute("data-theme", sk.id);
     const quick = document.getElementById("theme-quick");
     if (quick) quick.value = sk.id;
-    if (owned) toast(`Applied “${getSkin(sk.id).name}” skin`);
+    if (owned) toast(`Tema “${getSkin(sk.id).name}” aplicado`);
     renderBody();
   }
 

@@ -23,28 +23,28 @@ function scaleUpDown(rootMidi, scale, octaves = 1) {
 // Each drill: stable id, generator(bpm) -> notes
 export const DRILLS = [
   {
-    id: "drill-chromatic", title: "Chromatic Warm-up", difficulty: "beginner",
-    desc: "Chromatic run through the low register — builds finger independence.",
+    id: "drill-chromatic", title: "Aquecimento cromático", difficulty: "beginner",
+    desc: "Escala cromática na região grave — dá independência aos dedos.",
     bpm: 80, gen: (bpm) => seqFromMidis([40, 41, 42, 43, 45, 46, 47, 48, 50, 51, 52, 53, 52, 51, 50, 48, 47, 46, 45, 43, 42, 41], bpm, 0.5),
   },
   {
-    id: "drill-cmajor", title: "C Major Scale", difficulty: "beginner",
-    desc: "Ascend and descend the C major scale, one octave.",
+    id: "drill-cmajor", title: "Escala de Dó maior", difficulty: "beginner",
+    desc: "Suba e desça a escala de Dó maior, uma oitava.",
     bpm: 90, gen: (bpm) => seqFromMidis(scaleUpDown(48, "major", 1), bpm, 0.5),
   },
   {
-    id: "drill-gmajor2", title: "G Major Scale (2 octaves)", difficulty: "intermediate",
-    desc: "Two-octave G major run for fluency across the range.",
+    id: "drill-gmajor2", title: "Escala de Sol maior (2 oitavas)", difficulty: "intermediate",
+    desc: "Sol maior em duas oitavas, para soltar a mão no braço todo.",
     bpm: 100, gen: (bpm) => seqFromMidis(scaleUpDown(43, "major", 2), bpm, 0.5),
   },
   {
-    id: "drill-pentatonic", title: "A Minor Pentatonic", difficulty: "intermediate",
-    desc: "The staple lead scale — up and down.",
+    id: "drill-pentatonic", title: "Pentatônica de Lá menor", difficulty: "intermediate",
+    desc: "A escala básica de solo — subindo e descendo.",
     bpm: 100, gen: (bpm) => seqFromMidis(scaleUpDown(45, "minor_pentatonic", 1), bpm, 0.5),
   },
   {
-    id: "drill-chordchanges", title: "Chord Changes G–C–D", difficulty: "beginner",
-    desc: "Switch cleanly between open chords in time.",
+    id: "drill-chordchanges", title: "Troca de acordes G–C–D", difficulty: "beginner",
+    desc: "Troque entre acordes abertos de forma limpa, no tempo.",
     bpm: 70, gen: (bpm) => {
       const items = [];
       for (const root of [43, 48, 50, 43, 48, 50, 43, 43]) items.push(chordMidis(root, "maj"));
@@ -52,8 +52,8 @@ export const DRILLS = [
     },
   },
   {
-    id: "drill-bluespent", title: "Blues Scale Sprint", difficulty: "advanced",
-    desc: "E blues scale, fast — for accuracy at speed.",
+    id: "drill-bluespent", title: "Corrida na escala blues", difficulty: "advanced",
+    desc: "Escala blues de Mi, rápida — precisão com velocidade.",
     bpm: 130, gen: (bpm) => seqFromMidis(scaleUpDown(40, "blues", 2), bpm, 0.25),
   },
 ];
@@ -62,7 +62,7 @@ export function getDrill(id) { return DRILLS.find((d) => d.id === id); }
 
 export function buildDrillSong(drill, bpm) {
   return newSong({
-    id: drill.id, title: drill.title + " — Drill", artist: "GuitarPicker Trainer",
+    id: drill.id, title: drill.title + " — Exercício", artist: "Treino GuitarPicker",
     instrument: "acoustic-guitar", bpm: bpm || drill.bpm, difficulty: drill.difficulty,
     background: { type: "animated", value: "pulse" }, source: "drill",
     notes: drill.gen(bpm || drill.bpm),
@@ -72,36 +72,36 @@ export function buildDrillSong(drill, bpm) {
 // Course progression: ordered steps referencing song ids or drill ids.
 export const COURSES = [
   {
-    id: "course-foundations", title: "Guitar Foundations", level: "Beginner",
-    desc: "From your first notes to your first songs.",
+    id: "course-foundations", title: "Base do violão", level: "Iniciante",
+    desc: "Das primeiras notas às primeiras músicas.",
     steps: [
-      { id: "bi-twinkle", title: "Twinkle, Twinkle (melody)", ref: "bi-twinkle" },
-      { id: "drill-chromatic", title: "Chromatic Warm-up", ref: "drill-chromatic" },
-      { id: "drill-cmajor", title: "C Major Scale", ref: "drill-cmajor" },
-      { id: "bi-3chord", title: "Three-Chord Trainer", ref: "bi-3chord" },
-      { id: "drill-chordchanges", title: "Chord Changes G–C–D", ref: "drill-chordchanges" },
-      { id: "bi-saints", title: "When the Saints (melody)", ref: "bi-saints" },
+      { id: "bi-twinkle", title: "Twinkle, Twinkle (melodia)", ref: "bi-twinkle" },
+      { id: "drill-chromatic", title: "Aquecimento cromático", ref: "drill-chromatic" },
+      { id: "drill-cmajor", title: "Escala de Dó maior", ref: "drill-cmajor" },
+      { id: "bi-3chord", title: "Treino de três acordes", ref: "bi-3chord" },
+      { id: "drill-chordchanges", title: "Troca de acordes G–C–D", ref: "drill-chordchanges" },
+      { id: "bi-saints", title: "When the Saints (melodia)", ref: "bi-saints" },
     ],
   },
   {
-    id: "course-songcraft", title: "Strumming & Songcraft", level: "Beginner+",
-    desc: "Play along to full progressions and traditional tunes.",
+    id: "course-songcraft", title: "Batida e repertório", level: "Iniciante+",
+    desc: "Toque junto progressões completas e músicas tradicionais.",
     steps: [
-      { id: "bi-popprog", title: "Pop Progression I–V–vi–IV", ref: "bi-popprog" },
+      { id: "bi-popprog", title: "Progressão pop I–V–vi–IV", ref: "bi-popprog" },
       { id: "bi-auld", title: "Auld Lang Syne", ref: "bi-auld" },
       { id: "bi-amazing", title: "Amazing Grace", ref: "bi-amazing" },
       { id: "bi-ode", title: "Ode to Joy", ref: "bi-ode" },
     ],
   },
   {
-    id: "course-lead", title: "Lead & Improvisation", level: "Intermediate",
-    desc: "Scales, pentatonics, and the 12-bar blues.",
+    id: "course-lead", title: "Solo e improviso", level: "Intermediário",
+    desc: "Escalas, pentatônicas e o blues de 12 compassos.",
     steps: [
-      { id: "drill-pentatonic", title: "A Minor Pentatonic", ref: "drill-pentatonic" },
-      { id: "drill-gmajor2", title: "G Major (2 octaves)", ref: "drill-gmajor2" },
+      { id: "drill-pentatonic", title: "Pentatônica de Lá menor", ref: "drill-pentatonic" },
+      { id: "drill-gmajor2", title: "Sol maior (2 oitavas)", ref: "drill-gmajor2" },
       { id: "bi-12bar", title: "12-Bar Blues in A", ref: "bi-12bar" },
       { id: "bi-rising", title: "House of the Rising Sun", ref: "bi-rising" },
-      { id: "drill-bluespent", title: "Blues Scale Sprint", ref: "drill-bluespent" },
+      { id: "drill-bluespent", title: "Corrida na escala blues", ref: "drill-bluespent" },
     ],
   },
 ];

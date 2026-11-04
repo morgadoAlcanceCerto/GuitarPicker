@@ -26,8 +26,8 @@ export const Audio = {
   currentDevices() {
     const outId = Store.settings().outputDeviceId;
     return {
-      input: micStream ? (micDeviceLabel || "Microphone") : "",
-      output: outId ? (this._outLabel(outId) || "Selected output") : "System default",
+      input: micStream ? (micDeviceLabel || "Microfone") : "",
+      output: outId ? (this._outLabel(outId) || "Saída escolhida") : "Padrão do sistema",
       micLive: !!micStream,
     };
   },
@@ -39,9 +39,9 @@ export const Audio = {
     try { devices = await navigator.mediaDevices.enumerateDevices(); }
     catch (e) { console.warn("enumerateDevices failed", e); }
     const inputs = devices.filter((d) => d.kind === "audioinput")
-      .map((d) => ({ deviceId: d.deviceId, label: d.label || "Microphone" }));
+      .map((d) => ({ deviceId: d.deviceId, label: d.label || "Microfone" }));
     const outputs = devices.filter((d) => d.kind === "audiooutput")
-      .map((d) => ({ deviceId: d.deviceId, label: d.label || "Speaker" }));
+      .map((d) => ({ deviceId: d.deviceId, label: d.label || "Alto-falante" }));
     this._devCache = { inputs, outputs };
     return { inputs, outputs };
   },
@@ -58,7 +58,7 @@ export const Audio = {
     };
     micStream = await navigator.mediaDevices.getUserMedia(constraints);
     const track = micStream.getAudioTracks()[0];
-    micDeviceLabel = track ? track.label : "Microphone";
+    micDeviceLabel = track ? track.label : "Microfone";
     micSource = this.ctx().createMediaStreamSource(micStream);
     analyser = this.ctx().createAnalyser();
     analyser.fftSize = 2048;

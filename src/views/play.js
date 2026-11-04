@@ -14,6 +14,8 @@ import { drawBackground } from "../ui/backgrounds.js";
 import { renderAvatar } from "../cosmetics/index.js";
 import { buildLyricTimeline, activeAt } from "../karaoke/timeline.js";
 import { lineFillHTML, escapeHTML as esc } from "../karaoke/render.js";
+import { gen } from "../ui/pt.js";
+const JULGAMENTO = { perfect: "Perfeito", good: "Bom", off: "Fora", miss: "Errou" };
 
 const LEAD_IN = 3.0;          // count-in seconds before notes start
 const HIT_PAD = 0.16;         // detection window pad around a note
@@ -25,8 +27,8 @@ export default async function play(ctx) {
   const song = findSong(params[0]);
   if (!song) {
     root.appendChild(el("div.panel", { style: { margin: "22px" } }, [
-      el("h2", { text: "Song not found" }),
-      el("button.btn", { onclick: () => navigate("#/library") }, ["Back to songs"]),
+      el("h2", { text: "Música não encontrada" }),
+      el("button.btn", { onclick: () => navigate("#/library") }, ["Voltar às músicas"]),
     ]));
     return;
   }
@@ -68,12 +70,12 @@ export default async function play(ctx) {
   const songBox = el("div.hud-box", {}, [
     el("div", { html: `<b>${song.title}</b>` }),
     el("div.muted", { style: { fontSize: "12px" }, html:
-      `${song.artist} · key ${song.key} · ${song.bpm} BPM` + (capo ? ` · <span class="capo-note" style="padding:2px 8px">🔼 Capo ${capo}</span>` : "") }),
+      `${song.artist} · tom ${song.key} · ${song.bpm} BPM` + (capo ? ` · <span class="capo-note" style="padding:2px 8px">🔼 Capotraste ${capo}</span>` : "") }),
     parts.length > 1 ? el("div.muted", { style: { fontSize: "12px", marginTop: "2px" },
-      text: `🎯 Your part: ${inst.name}` }) : null,
+      text: `🎯 Sua parte: ${inst.name}` }) : null,
     (song.lyrics && song.lyrics.length)
-      ? el("div.muted", { style: { fontSize: "12px", marginTop: "2px" }, text: `🎤 Singalong${song.genre ? " · " + song.genre : ""}` })
-      : (song.genre ? el("div.muted", { style: { fontSize: "12px", marginTop: "2px" }, text: song.genre }) : null),
+      ? el("div.muted", { style: { fontSize: "12px", marginTop: "2px" }, text: `🎤 Para cantar junto${song.genre ? " · " + gen(song.genre) : ""}` })
+      : (song.genre ? el("div.muted", { style: { fontSize: "12px", marginTop: "2px" }, text: gen(song.genre) }) : null),
   ]);
   const healthWrap = el("div.healthbar-big", {}, [el("i", { style: { width: "100%" } })]);
   const killfeed = el("div.killfeed");
@@ -88,9 +90,9 @@ export default async function play(ctx) {
   overlay.append(hud, killfeed, lyric, el("div.play-bottom-fade"), banner);
 
   // controls
-  const playBtn = el("button.btn.primary", { onclick: togglePlay }, ["▶ Start"]);
-  const restartBtn = el("button.btn", { onclick: restart }, ["⟲ Restart"]);
-  const backBtn = el("button.btn.ghost", { onclick: () => navigate("#/library") }, ["← Songs"]);
+  const playBtn = el("button.btn.primary", { onclick: togglePlay }, ["▶ Começar"]);
+  const restartBtn = el("button.btn", { onclick: restart }, ["⟲ Recomeçar"]);
+  const backBtn = el("button.btn.ghost", { onclick: () => navigate("#/library") }, ["← Músicas"]);
   const player = new TrackPlayer();
   player.load(song);
 
@@ -102,42 +104,42 @@ export default async function play(ctx) {
   const band = new Band(bandParts, { a4, volume: s.backingVolume });
   let bandOn = !band.empty && !player.backing && (s.band ?? true);
   const bandBtn = band.empty ? null : el("button.btn", {
-    class: bandOn ? "primary" : "", title: "Synthesized accompaniment: " + band.names.join(", "),
+    class: bandOn ? "primary" : "", title: "Acompanhamento sintetizado: " + band.names.map((n) => ({ Bass: "Baixo", Drums: "Bateria" })[n] || n).join(", "),
     onclick: () => {
       bandOn = !bandOn; Store.setSetting("band", bandOn);
       bandBtn.classList.toggle("primary", bandOn);
       if (bandOn) band.seek(Math.max(0, clock)); else band.silence();
     },
-  }, ["🎺 Band"]);
+  }, ["🎺 Banda"]);
 
-  const volB = slider({ label: "Backing", value: s.backingVolume, fmt: (v) => Math.round(v * 100) + "%",
+  const volB = slider({ label: "Acompanhamento", value: s.backingVolume, fmt: (v) => Math.round(v * 100) + "%",
     oninput: (v) => { Store.setSetting("backingVolume", v); player.setBackingVolume(v); band.setVolume(v); } });
-  const volV = slider({ label: "Vocal", value: s.vocalVolume, fmt: (v) => Math.round(v * 100) + "%",
+  const volV = slider({ label: "Voz guia", value: s.vocalVolume, fmt: (v) => Math.round(v * 100) + "%",
     oninput: (v) => { Store.setSetting("vocalVolume", v); player.setVocalVolume(v); } });
-  const metroBtn = el("button.btn", { onclick: () => { metro = !metro; metroBtn.classList.toggle("primary", metro); } }, ["🥁 Metronome"]);
+  const metroBtn = el("button.btn", { onclick: () => { metro = !metro; metroBtn.classList.toggle("primary", metro); } }, ["🥁 Metrônomo"]);
   let metro = false;
   let noteSounds = s.noteSounds ?? true;
-  const soundBtn = el("button.btn", { class: noteSounds ? "primary" : "", title: "Sound each note as it reaches the hit line", onclick: () => {
+  const soundBtn = el("button.btn", { class: noteSounds ? "primary" : "", title: "Toca cada nota quando ela chega na linha", onclick: () => {
     noteSounds = !noteSounds; Store.setSetting("noteSounds", noteSounds);
     soundBtn.classList.toggle("primary", noteSounds);
-  } }, ["🔊 Notes"]);
+  } }, ["🔊 Notas"]);
   let showFrets = fretted || harp ? (s.showFingering ?? true) : false;
-  const fretBtn = fretted || harp ? el("button.btn", { class: showFrets ? "primary" : "", title: harp ? "Show harmonica hole and breath direction" : "Show finger positions on a fretboard", onclick: () => {
+  const fretBtn = fretted || harp ? el("button.btn", { class: showFrets ? "primary" : "", title: harp ? "Mostra o furo da gaita e se é soprar ou puxar" : "Mostra onde pôr os dedos no braço", onclick: () => {
     showFrets = !showFrets; Store.setSetting("showFingering", showFrets);
     fretBtn.classList.toggle("primary", showFrets);
     if (!playing) render(clock);
-  } }, [harp ? "🎺 Holes" : "🎸 Frets"]) : null;
-  const karaokeBtn = lyrics.length ? el("button.btn", { class: karaokeLyrics ? "primary" : "", title: "Word-by-word singalong highlight", onclick: () => {
+  } }, [harp ? "🎺 Furos" : "🎸 Braço"]) : null;
+  const karaokeBtn = lyrics.length ? el("button.btn", { class: karaokeLyrics ? "primary" : "", title: "Destaca a letra palavra por palavra", onclick: () => {
     karaokeLyrics = !karaokeLyrics; Store.setSetting("karaokeLyrics", karaokeLyrics);
     karaokeBtn.classList.toggle("primary", karaokeLyrics);
     updateLyric(clock);
-  } }, ["🎤 Karaoke"]) : null;
+  } }, ["🎤 Karaokê"]) : null;
 
   const controls = el("div.play-controls", {}, [
     playBtn, restartBtn,
     el("div.muted", { style: { minWidth: "70px" }, id: "play-clock", text: "0:00" }),
     el("div", { style: { flex: "1" } }),
-    (!player.hasAudio() && band.empty) ? el("span.muted", { style: { fontSize: "12px" }, text: "No backing audio — import one in the Song Editor." }) : null,
+    (!player.hasAudio() && band.empty) ? el("span.muted", { style: { fontSize: "12px" }, text: "Sem áudio de acompanhamento — importe um no Editor de músicas." }) : null,
     (player.backing || !band.empty) ? wrapNarrow(volB) : null,
     player.vocal ? wrapNarrow(volV) : null,
     karaokeBtn, bandBtn, soundBtn, fretBtn, metroBtn, backBtn,
@@ -196,7 +198,7 @@ export default async function play(ctx) {
   async function ensureMic() {
     if (Audio.micLive()) return true;
     try { await Audio.startMic(s.inputDeviceId); return true; }
-    catch (e) { toast("Mic off — notes won't be graded. " + e.message, "bad"); return false; }
+    catch (e) { toast("Microfone desligado — as notas não serão avaliadas. " + e.message, "bad"); return false; }
   }
 
   async function togglePlay() {
@@ -205,13 +207,13 @@ export default async function play(ctx) {
     await ensureMic();
     await Audio.resume();
     playing = true; started = true;
-    playBtn.textContent = "⏸ Pause";
+    playBtn.textContent = "⏸ Pausar";
     if (clock >= 0) player.play(clock);
     lastTs = performance.now();
     requestAnimationFrame(loop);
   }
   function pause() {
-    playing = false; playBtn.textContent = "▶ Resume";
+    playing = false; playBtn.textContent = "▶ Continuar";
     player.pause(); band.silence();
   }
   function restart() {
@@ -223,7 +225,7 @@ export default async function play(ctx) {
     notes.forEach((n) => { n.state = "pending"; n.best = 999; n.frames = 0; });
     killfeed.innerHTML = "";
     player.seek(0); band.seek(0);
-    playBtn.textContent = "▶ Start";
+    playBtn.textContent = "▶ Começar";
     render(0); updateHud();
   }
 
@@ -342,12 +344,12 @@ export default async function play(ctx) {
     else { health = Math.max(0, health - 10); streak = 0; }
     maxStreak = Math.max(maxStreak, streak);
     mult = 1 + Math.min(3, Math.floor(streak / 8)) * 0.5;
-    if (health <= 0 && !failed) { failed = true; toast("Healthbar empty — keep going, but this run won't count as a pass.", "bad"); }
+    if (health <= 0 && !failed) { failed = true; toast("A vida acabou — continue tocando, mas esta rodada não conta como aprovada.", "bad"); }
     pushKill(q, n);
   }
   function pushKill(q, n) {
     const label = describeMidiSet(n.midi);
-    const k = el(`div.kill.${q}`, { html: `${q[0].toUpperCase() + q.slice(1)} <span class="muted">${label}</span>` });
+    const k = el(`div.kill.${q}`, { html: `${JULGAMENTO[q] || q} <span class="muted">${label}</span>` });
     killfeed.appendChild(k);
     while (killfeed.children.length > 6) killfeed.firstChild.remove();
     setTimeout(() => { k.style.opacity = "0"; k.style.transition = "opacity 500ms"; }, 1400);
@@ -440,7 +442,7 @@ export default async function play(ctx) {
     roundRect(x0 - 10, y0 - 24, fbW + 20, fbH + 44, 10); c.fill();
     c.fillStyle = now ? getVar("--accent") : getVar("--muted");
     c.font = "bold 12px var(--font)";
-    c.fillText((now ? "Now: " : "Next: ") + describeMidiSet(cur.midi) + (capo ? ` · capo ${capo}` : ""), x0, y0 - 8);
+    c.fillText((now ? "Agora: " : "Próxima: ") + describeMidiSet(cur.midi) + (capo ? ` · capotraste ${capo}` : ""), x0, y0 - 8);
     const sy = (si) => y0 + fbH - 6 - si * 13;   // string 0 (lowest pitch) at bottom
     c.lineWidth = 1;
     c.strokeStyle = "rgba(255,255,255,0.4)";
@@ -483,11 +485,11 @@ export default async function play(ctx) {
     roundRect(x0 - 10, y0 - 24, fbW + 20, fbH + 34, 10); c.fill();
     const played = cur.holes.filter(Boolean);
     const label = played.length
-      ? played.map((p) => `hole ${p.hole} ${p.draw ? "draw ↓" : "blow ↑"}`).join(" · ")
-      : "not on a C harp";
+      ? played.map((p) => `furo ${p.hole} ${p.draw ? "puxar ↓" : "soprar ↑"}`).join(" · ")
+      : "não existe na gaita em C";
     c.fillStyle = now ? getVar("--accent") : getVar("--muted");
     c.font = "bold 12px var(--font)";
-    c.fillText((now ? "Now: " : "Next: ") + describeMidiSet(cur.midi) + " — " + label, x0, y0 - 8);
+    c.fillText((now ? "Agora: " : "Próxima: ") + describeMidiSet(cur.midi) + " — " + label, x0, y0 - 8);
     const col = now ? getVar("--accent") : "rgba(255,255,255,0.75)";
     for (let i = 0; i < 10; i++) {
       const x = x0 + i * cell;
@@ -552,7 +554,7 @@ export default async function play(ctx) {
 
   function finish() {
     finished = true; playing = false; player.pause(); band.silence();
-    playBtn.textContent = "⟲ Play again";
+    playBtn.textContent = "⟲ Tocar de novo";
     const acc = accuracy();
     const passed = !failed && acc >= 60;
     const grade = gradeLetter(acc, failed);
@@ -569,18 +571,18 @@ export default async function play(ctx) {
     banner.innerHTML = "";
     banner.appendChild(el("div.panel", {}, [
       el("div.big-grade", { text: grade, style: { color: passed ? getVar("--good") : getVar("--bad") } }),
-      el("h2", { text: passed ? "Song complete — passed!" : (failed ? "Finished (failed — healthbar emptied)" : "Finished") }),
+      el("h2", { text: passed ? "Música completa — aprovado!" : (failed ? "Terminou (reprovado — a vida acabou)" : "Terminou") }),
       coinsEarned ? el("div", { style: { fontSize: "16px", fontWeight: "700", color: "var(--warn)", margin: "2px 0 6px" },
-        html: `🪙 +${coinsEarned} coins earned · <span class="muted" style="font-weight:400">spend them in the Locker</span>` }) : null,
+        html: `🪙 +${coinsEarned} moedas ganhas · <span class="muted" style="font-weight:400">gaste no Armário</span>` }) : null,
       el("div.grid.cards", { style: { margin: "14px 0" } }, [
-        miniStat(acc + "%", "Accuracy"), miniStat(score, "Score"), miniStat(maxStreak, "Best streak"),
-        miniStat(counts.perfect, "Perfect"), miniStat(counts.miss, "Missed"),
+        miniStat(acc + "%", "Precisão"), miniStat(score, "Pontos"), miniStat(maxStreak, "Melhor sequência"),
+        miniStat(counts.perfect, "Perfeitas"), miniStat(counts.miss, "Erradas"),
       ]),
       el("div.row", { style: { justifyContent: "center" } }, [
-        el("button.btn.primary", { onclick: restart }, ["⟲ Play again"]),
-        el("button.btn", { onclick: () => navigate("#/library") }, ["← Songs"]),
-        el("button.btn", { onclick: () => navigate("#/history") }, ["📈 Progress"]),
-        coinsEarned ? el("button.btn", { onclick: () => navigate("#/locker") }, ["🎨 Locker"]) : null,
+        el("button.btn.primary", { onclick: restart }, ["⟲ Tocar de novo"]),
+        el("button.btn", { onclick: () => navigate("#/library") }, ["← Músicas"]),
+        el("button.btn", { onclick: () => navigate("#/history") }, ["📈 Progresso"]),
+        coinsEarned ? el("button.btn", { onclick: () => navigate("#/locker") }, ["🎨 Armário"]) : null,
       ]),
     ]));
     banner.classList.remove("hidden");
@@ -610,7 +612,7 @@ function miniStat(num, label) {
 }
 function scoreHTML(score, health, streak, mult, acc = 100, failed = false) {
   return `<div style="font-size:22px;font-weight:800">${score.toLocaleString()}</div>
-    <div class="muted" style="font-size:12px">${acc}% · streak ${streak} · ×${mult}${failed ? ' · <span style="color:var(--bad)">FAILED</span>' : ""}</div>`;
+    <div class="muted" style="font-size:12px">${acc}% · sequência ${streak} · ×${mult}${failed ? ' · <span style="color:var(--bad)">REPROVADO</span>' : ""}</div>`;
 }
 function gradeLetter(acc, failed) {
   if (failed) return "F";

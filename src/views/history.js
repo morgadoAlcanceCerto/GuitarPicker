@@ -7,34 +7,34 @@ export default function history(ctx) {
   const { el: root, navigate } = ctx;
   let instFilter = "all", viewMode = "all";
 
-  root.appendChild(pageHead("Progress", "Track your improvement across instruments and sessions."));
+  root.appendChild(pageHead("Progresso", "Acompanhe sua evolução por instrumento e por sessão."));
 
   const all = Store.historyFor();
   if (!all.length) {
     root.appendChild(el("div.panel.center", {}, [
-      el("h2", { text: "No sessions yet" }),
-      el("p.muted", { text: "Play a song or a drill and your results will trend here." }),
-      el("button.btn.primary", { onclick: () => navigate("#/library") }, ["Browse songs"]),
+      el("h2", { text: "Nenhuma sessão ainda" }),
+      el("p.muted", { text: "Toque uma música ou um exercício e seus resultados aparecem aqui." }),
+      el("button.btn.primary", { onclick: () => navigate("#/library") }, ["Ver músicas"]),
     ]));
     root.appendChild(buildCollectionPanel(navigate));
     return;
   }
 
   const usedInstruments = [...new Set(all.map((h) => h.instrument))];
-  const instSel = select({ label: "Instrument", value: instFilter,
-    options: [{ value: "all", label: "All instruments" }, ...usedInstruments.map((i) => ({ value: i, label: INSTRUMENTS[i]?.name || i }))],
+  const instSel = select({ label: "Instrumento", value: instFilter,
+    options: [{ value: "all", label: "Todos os instrumentos" }, ...usedInstruments.map((i) => ({ value: i, label: INSTRUMENTS[i]?.name || i }))],
     onchange: (v) => { instFilter = v; renderAll(); } });
-  const viewSel = select({ label: "View", value: viewMode,
-    options: [["all", "All sessions"], ["today", "Today"], ["bysong", "By song (best)"]].map(([v, l]) => ({ value: v, label: l })),
+  const viewSel = select({ label: "Ver", value: viewMode,
+    options: [["all", "Todas as sessões"], ["today", "Hoje"], ["bysong", "Por música (melhor)"]].map(([v, l]) => ({ value: v, label: l })),
     onchange: (v) => { viewMode = v; renderAll(); } });
   const aiBtn = el("button.btn", {
-    title: "Download a Markdown practice report — drop it into Claude (claude.ai, Claude Desktop, or Cowork) for coaching and trend analysis",
+    title: "Baixa um relatório da sua prática em Markdown — mande para o Claude analisar sua evolução e montar um plano de estudo",
     onclick: () => {
       const d = new Date().toISOString().slice(0, 10);
       download(`guitarpicker-progress-${d}.md`, buildProgressReport(all), "text/markdown");
-      toast("Report saved — open it with Claude for analysis", "good");
+      toast("Relatório salvo — abra com o Claude para a análise", "good");
     },
-  }, ["🤖 Export for Claude"]);
+  }, ["🤖 Exportar para o Claude"]);
   root.appendChild(el("div.panel.tight", { style: { marginBottom: "16px" } }, [
     el("div.row", {}, [instSel, viewSel, el("div", { style: { flex: "1" } }), aiBtn]),
   ]));
@@ -45,19 +45,19 @@ export default function history(ctx) {
   const summary = el("div.grid.cards", { style: { marginBottom: "16px" } });
   root.appendChild(summary);
 
-  const charts = el("div.panel", {}, [el("h2", { text: "Trends" })]);
+  const charts = el("div.panel", {}, [el("h2", { text: "Evolução" })]);
   const accCanvas = el("canvas.chart");
   const scoreCanvas = el("canvas.chart");
   charts.append(
     el("div.legend", {}, [
-      el("span", { html: `<i style="background:${getVar("--good")}"></i>Accuracy %` }),
-      el("span", { html: `<i style="background:${getVar("--accent")}"></i>Score (scaled)` }),
+      el("span", { html: `<i style="background:${getVar("--good")}"></i>Precisão %` }),
+      el("span", { html: `<i style="background:${getVar("--accent")}"></i>Pontos (em escala)` }),
     ]),
     accCanvas, scoreCanvas,
   );
   root.appendChild(charts);
 
-  const tableWrap = el("div.panel", {}, [el("h2", { text: "Sessions" })]);
+  const tableWrap = el("div.panel", {}, [el("h2", { text: "Sessões" })]);
   const table = el("div");
   tableWrap.appendChild(table);
   root.appendChild(tableWrap);
@@ -83,12 +83,12 @@ export default function history(ctx) {
     const passes = rows.filter((h) => h.passed).length;
     const coinsThis = rows.reduce((a, h) => a + (h.coins || 0), 0);
     summary.append(
-      stat(rows.length, "Sessions"),
-      stat(avgAcc + "%", "Avg accuracy"),
-      stat(passes, "Passes"),
-      stat(best, "Best streak"),
-      stat(fmtTime(totalTime), "Time played"),
-      stat("🪙 " + coinsThis, "Coins earned"),
+      stat(rows.length, "Sessões"),
+      stat(avgAcc + "%", "Precisão média"),
+      stat(passes, "Aprovações"),
+      stat(best, "Melhor sequência"),
+      stat(fmtTime(totalTime), "Tempo tocado"),
+      stat("🪙 " + coinsThis, "Moedas ganhas"),
     );
 
     // charts (chronological)
@@ -112,7 +112,7 @@ export default function history(ctx) {
       display = [...bySong.values()].sort((a, b) => b.score - a.score);
     }
     const t = el("table.data", {}, [
-      el("tr", {}, ["When", "Song", "Instrument", "Score", "Accuracy", "Streak", "Result"].map((h) => el("th", { text: h }))),
+      el("tr", {}, ["Quando", "Música", "Instrumento", "Pontos", "Precisão", "Sequência", "Resultado"].map((h) => el("th", { text: h }))),
       ...display.slice(0, 200).map((h) => el("tr", {}, [
         el("td", { text: new Date(h.ts).toLocaleString() }),
         el("td", { text: h.songTitle || h.songId }),
@@ -120,7 +120,7 @@ export default function history(ctx) {
         el("td", { text: h.score.toLocaleString() }),
         el("td", { text: h.accuracy + "%" }),
         el("td", { text: h.maxStreak }),
-        el("td", { html: h.passed ? `<span style="color:${getVar("--good")}">Pass</span>` : `<span style="color:${getVar("--bad")}">—</span>` }),
+        el("td", { html: h.passed ? `<span style="color:${getVar("--good")}">Aprovado</span>` : `<span style="color:${getVar("--bad")}">—</span>` }),
       ])),
     ]);
     table.appendChild(t);
@@ -153,31 +153,31 @@ export function buildProgressReport(all) {
 
   const sessionRows = rows.map((h) => {
     const n = h.notes || {};
-    return `| ${new Date(h.ts).toISOString().slice(0, 16).replace("T", " ")} | ${h.songTitle || h.songId} | ${h.accuracy}% | ${h.score.toLocaleString()} | ${h.maxStreak} | ${h.passed ? "pass" : "fail"} | ${n.perfect ?? ""}/${n.good ?? ""}/${n.off ?? ""}/${n.miss ?? ""} |`;
+    return `| ${new Date(h.ts).toISOString().slice(0, 16).replace("T", " ")} | ${h.songTitle || h.songId} | ${h.accuracy}% | ${h.score.toLocaleString()} | ${h.maxStreak} | ${h.passed ? "aprovado" : "reprovado"} | ${n.perfect ?? ""}/${n.good ?? ""}/${n.off ?? ""}/${n.miss ?? ""} |`;
   });
 
-  return `# GuitarPicker practice report
+  return `# Relatório de prática do GuitarPicker
 
-Generated ${new Date().toISOString().slice(0, 10)} · exported from GuitarPicker (accuracy = pitch-detection grading of real playing).
+Gerado em ${new Date().toISOString().slice(0, 10)} · exportado do GuitarPicker (precisão = avaliação por detecção de nota do que foi tocado de verdade).
 
-> **Suggested prompt:** Act as my guitar teacher. Analyze this practice log: accuracy and score trends over time, consistency of practice, which songs need the most work, and where I plateau. Finish with a focused practice plan for the next week.
+> **Sugestão de pedido:** Aja como meu professor de violão. Analise este registro de prática: evolução da precisão e dos pontos ao longo do tempo, constância da prática, quais músicas precisam de mais trabalho e onde eu estacionei. Termine com um plano de estudo focado para a próxima semana.
 
-## Summary
+## Resumo
 
-- Sessions: ${rows.length} (${day(rows[rows.length - 1].ts)} → ${day(rows[0].ts)})
-- Average accuracy: ${avgAcc}% · passes: ${rows.filter((h) => h.passed).length}/${rows.length}
-- Total time played: ${fmtTime(totalTime)}
-- Daily practice streak: ${streak.count} (best ${streak.best})
+- Sessões: ${rows.length} (${day(rows[rows.length - 1].ts)} → ${day(rows[0].ts)})
+- Precisão média: ${avgAcc}% · aprovações: ${rows.filter((h) => h.passed).length}/${rows.length}
+- Tempo total tocado: ${fmtTime(totalTime)}
+- Sequência de dias praticando: ${streak.count} (recorde ${streak.best})
 
-## Per song
+## Por música
 
-| Song | Instrument | Attempts | Passes | Best accuracy | Best score |
+| Música | Instrumento | Tentativas | Aprovações | Melhor precisão | Melhores pontos |
 |---|---|---|---|---|---|
 ${songRows.join("\n")}
 
-## Sessions (newest first — Notes column is perfect/good/off/miss counts)
+## Sessões (mais novas primeiro — a coluna Notas é perfeitas/boas/fora/erradas)
 
-| When (UTC) | Song | Accuracy | Score | Best streak | Result | Notes |
+| Quando (UTC) | Música | Precisão | Pontos | Melhor sequência | Resultado | Notas |
 |---|---|---|---|---|---|---|
 ${sessionRows.join("\n")}
 `;
@@ -203,14 +203,14 @@ function buildCollectionPanel(navigate) {
 
   return el("div.panel", { style: { marginBottom: "16px" } }, [
     el("div.spread", {}, [
-      el("h2", { text: "🎨 Collection" }),
+      el("h2", { text: "🎨 Coleção" }),
       el("div.row", { style: { gap: "12px", alignItems: "center" } }, [
-        el("span.muted", { html: `🪙 <b style="color:var(--warn)">${cs.coins.toLocaleString()}</b> coins` }),
-        navigate ? el("button.btn", { onclick: () => navigate("#/locker") }, ["Open Locker"]) : null,
+        el("span.muted", { html: `🪙 <b style="color:var(--warn)">${cs.coins.toLocaleString()}</b> moedas` }),
+        navigate ? el("button.btn", { onclick: () => navigate("#/locker") }, ["Abrir Armário"]) : null,
       ]),
     ]),
     el("div.muted", { style: { margin: "4px 0 8px", fontSize: "13px" },
-      text: `${cs.owned} of ${cs.total} unlockable items collected (${Math.round(frac * 100)}%)` }),
+      text: `${cs.owned} de ${cs.total} itens desbloqueáveis coletados (${Math.round(frac * 100)}%)` }),
     progressBar(frac),
     chips,
   ]);

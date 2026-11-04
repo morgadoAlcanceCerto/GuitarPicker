@@ -5,31 +5,32 @@ import { parse, newSong, songDuration, serialize, uid } from "../music/song-form
 import { INSTRUMENTS, midiToName } from "../music/notes.js";
 import { suggestCapo, transposeSong, keyName } from "../music/theory.js";
 import { Synth } from "../audio/synth.js";
+import { dif, gen } from "../ui/pt.js";
 
 export default function library(ctx) {
   const { el: root, navigate } = ctx;
   let filter = { q: "", instrument: "all", difficulty: "all", genre: "all", karaoke: false };
 
   const actions = [
-    el("button.btn", { onclick: importSong }, ["⬇ Import"]),
-    el("button.btn.primary", { onclick: () => navigate("#/editor") }, ["+ New song"]),
+    el("button.btn", { onclick: importSong }, ["⬇ Importar"]),
+    el("button.btn.primary", { onclick: () => navigate("#/editor") }, ["+ Nova música"]),
   ];
-  root.appendChild(pageHead("Songs", "Public-domain library plus your own creations. Import, export, transpose, and play.", actions));
+  root.appendChild(pageHead("Músicas", "Biblioteca de domínio público mais as suas criações. Importe, exporte, transponha e toque.", actions));
 
   // filter bar
-  const search = el("input.input", { type: "search", placeholder: "Search title or artist…",
+  const search = el("input.input", { type: "search", placeholder: "Buscar título ou artista…",
     oninput: (e) => { filter.q = e.target.value.toLowerCase(); renderGrid(); } });
   const instSel = el("select.input", { onchange: (e) => { filter.instrument = e.target.value; renderGrid(); } },
-    [el("option", { value: "all", text: "All instruments" }),
+    [el("option", { value: "all", text: "Todos os instrumentos" }),
      ...Object.entries(INSTRUMENTS).map(([id, i]) => el("option", { value: id, text: i.name }))]);
   const genreSel = el("select.input", { onchange: (e) => { filter.genre = e.target.value; renderGrid(); } },
-    [el("option", { value: "all", text: "All genres" }),
-     ...[...new Set(allSongs().map((s) => s.genre).filter(Boolean))].sort().map((g) => el("option", { value: g, text: g }))]);
+    [el("option", { value: "all", text: "Todos os gêneros" }),
+     ...[...new Set(allSongs().map((s) => s.genre).filter(Boolean))].sort().map((g) => el("option", { value: g, text: gen(g) }))]);
   const diffPills = el("div.pill-row", {}, ["all", "beginner", "intermediate", "advanced"].map((d) =>
-    el(`span.pill${d === "all" ? ".active" : ""}`, { text: d, onclick: (e) => {
-      filter.difficulty = d; [...diffPills.children].forEach((p) => p.classList.toggle("active", p.textContent === d)); renderGrid();
+    el(`span.pill${d === "all" ? ".active" : ""}`, { text: dif(d), "data-dif": d, onclick: (e) => {
+      filter.difficulty = d; [...diffPills.children].forEach((p) => p.classList.toggle("active", p.dataset.dif === d)); renderGrid();
     } })));
-  const karaokePill = el("span.pill", { text: "🎤 Karaoke", title: "Only songs with lyrics", onclick: () => {
+  const karaokePill = el("span.pill", { text: "🎤 Karaokê", title: "Só músicas com letra", onclick: () => {
     filter.karaoke = !filter.karaoke; karaokePill.classList.toggle("active", filter.karaoke); renderGrid();
   } });
   root.appendChild(el("div.panel.tight", { style: { marginBottom: "16px" } }, [
@@ -44,11 +45,11 @@ export default function library(ctx) {
 
   // storage / file-location info
   root.appendChild(el("div.panel", { style: { marginTop: "18px" } }, [
-    el("h3", { text: "Where are my song files?" }),
+    el("h3", { text: "Onde ficam minhas músicas?" }),
     el("p.muted", { html:
-      "Your songs live in this browser's local storage under the key <code>guitarpicker.v1</code>. " +
-      "Use <b>Export</b> on any song to save a portable <code>.json</code> file (lands in your Downloads folder), " +
-      "and <b>Import</b> to load one back. Built-in public-domain songs are bundled with the app and can be duplicated to edit." }),
+      "Suas músicas ficam guardadas neste navegador, na chave <code>guitarpicker.v1</code>. " +
+      "Use <b>Exportar</b> em qualquer música para salvar um arquivo <code>.json</code> (vai para a pasta Downloads), " +
+      "e <b>Importar</b> para carregar de volta. As músicas de domínio público já vêm com o app e podem ser duplicadas para editar." }),
   ]));
 
   const modalHost = el("div");
@@ -72,24 +73,24 @@ export default function library(ctx) {
   function renderGrid() {
     clear(grid);
     const songs = list();
-    if (!songs.length) { grid.appendChild(el("p.muted", { text: "No songs match your filters." })); return; }
+    if (!songs.length) { grid.appendChild(el("p.muted", { text: "Nenhuma música com esses filtros." })); return; }
     for (const s of songs) {
       const card = el("div.card", { onclick: () => openDetail(s) }, [
         el("div.spread", {}, [
           el("div.title", { text: s.title }),
-          isBuiltin(s.id) ? tag("public domain") : tag(s.source || "custom"),
+          isBuiltin(s.id) ? tag("domínio público") : tag(({ manual: "sua", import: "importada", listen: "gravada", custom: "sua" })[s.source] || s.source || "sua"),
         ]),
         el("div.sub", { text: `${s.artist} · ${INSTRUMENTS[s.instrument]?.name || s.instrument}` }),
         el("div.row", { style: { gap: "6px", flexWrap: "wrap" } }, [
-          tag(s.difficulty, s.difficulty),
-          s.genre ? tag(s.genre) : null,
-          tag(`key ${s.key}`),
-          s.capo ? tag(`capo ${s.capo}`) : null,
-          (s.lyrics || []).length ? tag("🎤 karaoke") : null,
+          tag(dif(s.difficulty), s.difficulty),
+          s.genre ? tag(gen(s.genre)) : null,
+          tag(`tom ${s.key}`),
+          s.capo ? tag(`capotraste ${s.capo}`) : null,
+          (s.lyrics || []).length ? tag("🎤 karaokê") : null,
         ]),
         el("div.row", { style: { marginTop: "auto", gap: "6px" } }, [
-          el("button.btn.primary", { style: { flex: "1" }, onclick: (ev) => { ev.stopPropagation(); navigate(`#/play/${s.id}`); } }, ["▶ Play"]),
-          (s.lyrics || []).length ? el("button.btn", { title: "Karaoke", onclick: (ev) => { ev.stopPropagation(); navigate(`#/karaoke/${s.id}`); } }, ["🎤"]) : null,
+          el("button.btn.primary", { style: { flex: "1" }, onclick: (ev) => { ev.stopPropagation(); navigate(`#/play/${s.id}`); } }, ["▶ Tocar"]),
+          (s.lyrics || []).length ? el("button.btn", { title: "Karaokê", onclick: (ev) => { ev.stopPropagation(); navigate(`#/karaoke/${s.id}`); } }, ["🎤"]) : null,
         ]),
       ]);
       grid.appendChild(card);
@@ -103,7 +104,7 @@ export default function library(ctx) {
 
     const keyLine = el("div.muted", {});
     function refreshKeyLine() {
-      keyLine.textContent = `Key ${working.key} · ${working.bpm} BPM · capo ${working.capo || capo} · ${working.notes.length} notes · ${fmtTime(songDuration(working))}`;
+      keyLine.textContent = `Tom ${working.key} · ${working.bpm} BPM · capotraste ${working.capo || capo} · ${working.notes.length} notas · ${fmtTime(songDuration(working))}`;
     }
     refreshKeyLine();
 
@@ -112,30 +113,30 @@ export default function library(ctx) {
       el("div.muted", { text: `${song.artist} · ${INSTRUMENTS[song.instrument]?.name || song.instrument}` }),
       keyLine,
       el("div.row", { style: { margin: "10px 0" } }, [
-        tag(song.difficulty, song.difficulty),
-        song.audio?.backing ? tag("has backing") : tag("🎺 synth band"),
-        song.audio?.vocal ? tag("has vocal") : null,
-        song.lyrics?.length ? tag("🎤 karaoke") : null,
+        tag(dif(song.difficulty), song.difficulty),
+        song.audio?.backing ? tag("tem acompanhamento") : tag("🎺 banda sintetizada"),
+        song.audio?.vocal ? tag("tem voz guia") : null,
+        song.lyrics?.length ? tag("🎤 karaokê") : null,
         ...(song.parts || []).map((p) => tag("+ " + (INSTRUMENTS[p.instrument]?.name || p.instrument))),
       ]),
       el("div.panel.tight", { style: { background: "var(--panel-2)" } }, [
         el("div.spread", {}, [
-          el("span.muted", { text: "Transpose (creates a copy in a new key):" }),
+          el("span.muted", { text: "Transpor (cria uma cópia em outro tom):" }),
           el("div.row", { style: { gap: "6px" } }, [
             el("button.btn", { onclick: () => doTranspose(-1) }, ["♭ −1"]),
             el("button.btn", { onclick: () => doTranspose(1) }, ["♯ +1"]),
-            el("button.btn", { onclick: () => Synth.playMidi((song.notes[0]?.midi[0]) || 60, { instrument: song.instrument }) }, ["🔊 Preview"]),
+            el("button.btn", { onclick: () => Synth.playMidi((song.notes[0]?.midi[0]) || 60, { instrument: song.instrument }) }, ["🔊 Ouvir"]),
           ]),
         ]),
       ]),
       el("div.row", { style: { marginTop: "14px" } }, [
-        el("button.btn.primary", { onclick: () => navigate(`#/play/${working.id}`) }, ["▶ Play"]),
-        song.lyrics?.length ? el("button.btn", { onclick: () => navigate(`#/karaoke/${working.id}`) }, ["🎤 Karaoke"]) : null,
+        el("button.btn.primary", { onclick: () => navigate(`#/play/${working.id}`) }, ["▶ Tocar"]),
+        song.lyrics?.length ? el("button.btn", { onclick: () => navigate(`#/karaoke/${working.id}`) }, ["🎤 Karaokê"]) : null,
         el("button.btn", { onclick: () => navigate(`#/editor/${working.id}`) },
-          [isBuiltin(working.id) ? "✏ Edit a copy" : "✏ Edit"]),
-        el("button.btn", { onclick: () => exportSong(working) }, ["⬆ Export"]),
-        el("button.btn", { onclick: duplicate }, ["⧉ Duplicate"]),
-        !isBuiltin(song.id) ? el("button.btn.danger", { onclick: del }, ["🗑 Delete"]) : null,
+          [isBuiltin(working.id) ? "✏ Editar uma cópia" : "✏ Editar"]),
+        el("button.btn", { onclick: () => exportSong(working) }, ["⬆ Exportar"]),
+        el("button.btn", { onclick: duplicate }, ["⧉ Duplicar"]),
+        !isBuiltin(song.id) ? el("button.btn.danger", { onclick: del }, ["🗑 Excluir"]) : null,
       ]),
     ]);
 
@@ -153,22 +154,22 @@ export default function library(ctx) {
         key: keyName(((noteToPc(working.key) + semi) % 12 + 12) % 12, /m$/.test(working.key)),
       });
       Store.saveSong(copy); working = copy; refreshKeyLine();
-      toast(`Saved transposed copy: ${copy.title}`, "good");
+      toast(`Cópia transposta salva: ${copy.title}`, "good");
     }
     function duplicate() {
-      const copy = newSong({ ...working, id: uid(), source: "manual", title: working.title + " (copy)" });
-      Store.saveSong(copy); toast("Duplicated to your songs", "good"); renderGrid();
+      const copy = newSong({ ...working, id: uid(), source: "manual", title: working.title + " (cópia)" });
+      Store.saveSong(copy); toast("Duplicada nas suas músicas", "good"); renderGrid();
     }
     function del() {
-      if (!confirm(`Delete "${song.title}"?`)) return;
-      Store.deleteSong(song.id); close(); toast("Deleted");
+      if (!confirm(`Excluir "${song.title}"?`)) return;
+      Store.deleteSong(song.id); close(); toast("Excluída");
     }
   }
 
   function exportSong(song) {
     const safe = song.title.replace(/[^\w\- ]+/g, "").trim().replace(/\s+/g, "_") || "song";
     download(`${safe}.gpsong.json`, serialize(song));
-    toast("Exported to your Downloads folder", "good");
+    toast("Exportada para a pasta Downloads", "good");
   }
 
   async function importSong() {
@@ -178,8 +179,8 @@ export default function library(ctx) {
       const song = parse(picked.text);
       song.id = uid(); song.source = "import";
       Store.saveSong(song);
-      toast(`Imported "${song.title}" (from ${picked.name})`, "good");
-    } catch (e) { toast("Import failed: " + e.message, "bad"); }
+      toast(`"${song.title}" importada (de ${picked.name})`, "good");
+    } catch (e) { toast("Falha ao importar: " + e.message, "bad"); }
   }
 
   return () => off();

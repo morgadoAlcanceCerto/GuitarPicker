@@ -29,7 +29,7 @@ function builtin(o) {
 
 const SONGS = [
   builtin({
-    id: "bi-twinkle", title: "Twinkle, Twinkle, Little Star", artist: "Trad.",
+    id: "bi-twinkle", title: "Twinkle, Twinkle, Little Star", artist: "Tradicional",
     key: "C", bpm: 100, difficulty: "beginner",
     background: { type: "animated", value: "starfield" },
     notes: parseMelody(100,
@@ -53,7 +53,7 @@ const SONGS = [
       "E4:1 E4:1 F4:1 G4:1 G4:1 F4:1 E4:1 D4:1 C4:1 C4:1 D4:1 E4:1 D4:1.5 C4:0.5 C4:2"),
   }),
   builtin({
-    id: "bi-saints", title: "When the Saints Go Marching In", artist: "Trad.",
+    id: "bi-saints", title: "When the Saints Go Marching In", artist: "Tradicional",
     key: "C", bpm: 110, difficulty: "beginner",
     background: { type: "solid", value: "" },
     notes: parseMelody(110,
@@ -62,7 +62,7 @@ const SONGS = [
     // answers, or set your instrument to harmonica and the guitar plays instead.
     // Every pitch here is a plain blow/draw on a C diatonic — no bends.
     parts: [{
-      instrument: "harmonica", name: "Harmonica",
+      instrument: "harmonica", name: "Gaita",
       notes: parseMelody(110, "r:3 B4:2 D5:0.5 B4:0.5 r:3 B4:2 G5:0.5 E5:0.5 r:3 D5:2 r:3 D5:3"),
     }],
     lyrics: [
@@ -72,7 +72,7 @@ const SONGS = [
     ],
   }),
   builtin({
-    id: "bi-auld", title: "Auld Lang Syne", artist: "Trad. / Burns",
+    id: "bi-auld", title: "Auld Lang Syne", artist: "Tradicional / Burns",
     key: "C", bpm: 90, difficulty: "beginner",
     background: { type: "animated", value: "waves" },
     notes: parseMelody(90,
@@ -80,7 +80,7 @@ const SONGS = [
       "A4:1 G4:1.5 E4:0.5 E4:1 C4:1 D4:1.5 C4:0.5 D4:1 E4:1 C4:1.5 A3:0.5 A3:1 G3:1 C4:3"),
   }),
   builtin({
-    id: "bi-frere", title: "Frère Jacques", artist: "Trad.",
+    id: "bi-frere", title: "Frère Jacques", artist: "Tradicional",
     key: "C", bpm: 100, difficulty: "beginner", genre: "Children's",
     background: { type: "animated", value: "pulse" },
     notes: parseMelody(100,
@@ -101,7 +101,7 @@ const SONGS = [
     ],
   }),
   builtin({
-    id: "bi-amazing", title: "Amazing Grace", artist: "Trad. / Newton",
+    id: "bi-amazing", title: "Amazing Grace", artist: "Tradicional / Newton",
     key: "C", bpm: 80, difficulty: "intermediate",
     background: { type: "animated", value: "aurora" },
     notes: parseMelody(80,
@@ -109,7 +109,7 @@ const SONGS = [
     lyrics: [{ time: 0, text: "Amazing grace, how sweet the sound" }],
   }),
   builtin({
-    id: "bi-scarborough", title: "Scarborough Fair", artist: "Trad.",
+    id: "bi-scarborough", title: "Scarborough Fair", artist: "Tradicional",
     key: "Am", bpm: 96, difficulty: "intermediate",
     background: { type: "animated", value: "waves" },
     notes: parseMelody(96,
@@ -117,14 +117,14 @@ const SONGS = [
       "G3:3 D4:1.5 D4:1.5 C4:1 B3:1 A3:1 G3:1.5 A3:0.5 B3:1 A3:1 A3:3"),
   }),
   builtin({
-    id: "bi-greensleeves", title: "Greensleeves", artist: "Trad.",
+    id: "bi-greensleeves", title: "Greensleeves", artist: "Tradicional",
     key: "Am", bpm: 100, difficulty: "intermediate",
     background: { type: "animated", value: "aurora" },
     notes: parseMelody(100,
       "A3:1 C4:2 D4:1 E4:1.5 F4:0.5 E4:1 D4:2 B3:1 G3:1.5 A3:0.5 B3:1 C4:2 A3:1 A3:1.5 G#3:0.5 A3:1 B3:2 G#3:1 E3:3"),
   }),
   builtin({
-    id: "bi-rising", title: "House of the Rising Sun", artist: "Trad.",
+    id: "bi-rising", title: "House of the Rising Sun", artist: "Tradicional",
     key: "Am", bpm: 76, difficulty: "intermediate",
     background: { type: "animated", value: "starfield" },
     notes: parseMelody(76,
@@ -133,7 +133,7 @@ const SONGS = [
       "A2:0.5 E3:0.5 A3:0.5 C4:0.5 E4:0.5 C4:0.5 E2:0.5 B2:0.5 E3:0.5 G#3:0.5 B3:0.5 G#3:0.5"),
   }),
   builtin({
-    id: "bi-canon", title: "Canon in D (excerpt)", artist: "Pachelbel",
+    id: "bi-canon", title: "Cânone em D (trecho)", artist: "Pachelbel",
     key: "D", bpm: 100, difficulty: "advanced",
     background: { type: "animated", value: "aurora" },
     notes: parseMelody(100,
@@ -143,7 +143,7 @@ const SONGS = [
 
   // ---- Singalong tunes (timed lyrics for karaoke-style play) ----
   builtin({
-    id: "bi-mary", title: "Mary Had a Little Lamb", artist: "Trad.",
+    id: "bi-mary", title: "Mary Had a Little Lamb", artist: "Tradicional",
     key: "C", bpm: 100, difficulty: "beginner", genre: "Children's",
     background: { type: "animated", value: "pulse" },
     notes: parseMelody(100,
@@ -155,7 +155,7 @@ const SONGS = [
     ],
   }),
   builtin({
-    id: "bi-row", title: "Row, Row, Row Your Boat", artist: "Trad.",
+    id: "bi-row", title: "Row, Row, Row Your Boat", artist: "Tradicional",
     key: "C", bpm: 90, difficulty: "beginner", genre: "Children's",
     background: { type: "animated", value: "waves" },
     notes: parseMelody(90,
@@ -167,7 +167,7 @@ const SONGS = [
     ],
   }),
   builtin({
-    id: "bi-london", title: "London Bridge Is Falling Down", artist: "Trad.",
+    id: "bi-london", title: "London Bridge Is Falling Down", artist: "Tradicional",
     key: "C", bpm: 120, difficulty: "beginner", genre: "Children's",
     background: { type: "solid", value: "" },
     notes: parseMelody(120,
@@ -179,7 +179,7 @@ const SONGS = [
     ],
   }),
   builtin({
-    id: "bi-macdonald", title: "Old MacDonald Had a Farm", artist: "Trad.",
+    id: "bi-macdonald", title: "Old MacDonald Had a Farm", artist: "Tradicional",
     key: "C", bpm: 120, difficulty: "beginner", genre: "Children's",
     background: { type: "animated", value: "pulse" },
     notes: parseMelody(120,
@@ -193,7 +193,7 @@ const SONGS = [
     ],
   }),
   builtin({
-    id: "bi-jingle", title: "Jingle Bells", artist: "Pierpont (Trad.)",
+    id: "bi-jingle", title: "Jingle Bells", artist: "Pierpont (tradicional)",
     key: "C", bpm: 120, difficulty: "beginner", genre: "Holiday",
     background: { type: "animated", value: "starfield" },
     notes: parseMelody(120,
@@ -205,7 +205,7 @@ const SONGS = [
     ],
   }),
   builtin({
-    id: "bi-susanna", title: "Oh! Susanna", artist: "Stephen Foster (Trad.)",
+    id: "bi-susanna", title: "Oh! Susanna", artist: "Stephen Foster (tradicional)",
     key: "C", bpm: 120, difficulty: "intermediate", genre: "Folk",
     background: { type: "animated", value: "waves" },
     notes: parseMelody(120,
@@ -221,7 +221,7 @@ const SONGS = [
     ],
   }),
   builtin({
-    id: "bi-silent", title: "Silent Night", artist: "Gruber / Mohr (Trad.)",
+    id: "bi-silent", title: "Silent Night", artist: "Gruber / Mohr (tradicional)",
     key: "C", bpm: 90, difficulty: "intermediate", genre: "Holiday",
     background: { type: "animated", value: "aurora" },
     notes: parseMelody(90,
@@ -239,7 +239,7 @@ const SONGS = [
 
   // ---- Chord-progression trainers (great for strumming practice) ----
   builtin({
-    id: "bi-3chord", title: "Three-Chord Trainer (G–C–D)", artist: "GuitarPicker",
+    id: "bi-3chord", title: "Treino de três acordes (G–C–D)", artist: "GuitarPicker",
     key: "G", bpm: 90, difficulty: "beginner",
     background: { type: "solid", value: "" },
     notes: chordSeq(90, [
@@ -248,7 +248,7 @@ const SONGS = [
     ]),
   }),
   builtin({
-    id: "bi-popprog", title: "Pop Progression I–V–vi–IV (C)", artist: "GuitarPicker",
+    id: "bi-popprog", title: "Progressão pop I–V–vi–IV (C)", artist: "GuitarPicker",
     key: "C", bpm: 100, difficulty: "beginner",
     background: { type: "animated", value: "waves" },
     notes: chordSeq(100, [
@@ -257,7 +257,7 @@ const SONGS = [
     ]),
   }),
   builtin({
-    id: "bi-12bar", title: "12-Bar Blues in A", artist: "Trad.",
+    id: "bi-12bar", title: "Blues de 12 compassos em A", artist: "Tradicional",
     key: "A", bpm: 96, difficulty: "intermediate",
     background: { type: "animated", value: "starfield" },
     notes: chordSeq(96, [
@@ -269,35 +269,35 @@ const SONGS = [
 
   // ---- A simple variation for another instrument (ukulele) ----
   builtin({
-    id: "bi-ode-uke", title: "Ode to Joy (Ukulele)", artist: "Beethoven",
+    id: "bi-ode-uke", title: "Ode to Joy (ukulele)", artist: "Beethoven",
     instrument: "ukulele", key: "C", bpm: 110, difficulty: "beginner",
     background: { type: "solid", value: "" },
     notes: parseMelody(110,
       "E4:1 E4:1 F4:1 G4:1 G4:1 F4:1 E4:1 D4:1 C4:1 C4:1 D4:1 E4:1 E4:1.5 D4:0.5 D4:2"),
   }),
   builtin({
-    id: "bi-saints-bass", title: "When the Saints (Bass Line)", artist: "Trad.",
+    id: "bi-saints-bass", title: "When the Saints (linha de baixo)", artist: "Tradicional",
     instrument: "bass", key: "C", bpm: 110, difficulty: "beginner",
     notes: parseMelody(110,
       "C2:1 E2:1 F2:1 G2:2 r:1 C2:1 E2:1 F2:1 G2:2 r:1 C2:1 E2:1 F2:1 G2:2 E2:1 C2:1 E2:1 D2:3"),
   }),
   // ---- harmonica: middle octave of a C diatonic (holes 4-7, no bends) ----
   builtin({
-    id: "bi-saints-harmonica", title: "When the Saints (Harmonica)", artist: "Trad.",
+    id: "bi-saints-harmonica", title: "When the Saints (gaita)", artist: "Tradicional",
     instrument: "harmonica", key: "C", bpm: 110, difficulty: "beginner",
     notes: parseMelody(110,
       "C5:1 E5:1 F5:1 G5:2 r:1 C5:1 E5:1 F5:1 G5:2 r:1 C5:1 E5:1 F5:1 G5:2 E5:1 C5:1 E5:1 D5:3"),
   }),
   // ---- recorder: the classic first tune, in the soprano's bottom register ----
   builtin({
-    id: "bi-hotcross-recorder", title: "Hot Cross Buns (Recorder)", artist: "Trad.",
+    id: "bi-hotcross-recorder", title: "Hot Cross Buns (flauta doce)", artist: "Tradicional",
     instrument: "recorder", key: "C", bpm: 90, difficulty: "beginner",
     notes: parseMelody(90,
       "E5:1 D5:1 C5:2 E5:1 D5:1 C5:2 C5:0.5 C5:0.5 C5:0.5 C5:0.5 D5:0.5 D5:0.5 D5:0.5 D5:0.5 E5:1 D5:1 C5:2"),
   }),
   // ---- drums: unpitched, graded on hit timing (lanes are GM kick/snare/hat) ----
   builtin({
-    id: "bi-backbeat", title: "Backbeat Basics (Drums)", artist: "GuitarPicker",
+    id: "bi-backbeat", title: "Básico de backbeat (bateria)", artist: "GuitarPicker",
     instrument: "e-drums", key: "C", bpm: 90, difficulty: "beginner",
     notes: parseMelody(90,
       "C2:1 D2:1 C2:1 D2:1 C2:1 D2:1 C2:1 D2:1 " +

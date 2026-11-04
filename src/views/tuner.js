@@ -3,6 +3,7 @@ import { Store } from "../state.js";
 import { Audio } from "../audio/engine.js";
 import { detectPitch, PitchTracker } from "../audio/pitch.js";
 import { Synth } from "../audio/synth.js";
+import { afin } from "../ui/pt.js";
 import { INSTRUMENTS, instrumentOptions, ALT_TUNINGS, STRING_LABELS, midiToFreq, midiToName, centsTo, freqToMidi } from "../music/notes.js";
 
 export default async function tuner(ctx) {
@@ -17,16 +18,16 @@ export default async function tuner(ctx) {
   const tracker = new PitchTracker();
   const buf = new Float32Array(2048);
 
-  root.appendChild(pageHead("Tuner", "Play one string at a time. GuitarPicker detects pitch and tells you when you're out of tune."));
+  root.appendChild(pageHead("Afinador", "Toque uma corda de cada vez. O app reconhece a nota e avisa quando está desafinada."));
 
   // controls
-  const instSel = select({ label: "Instrument", value: instrument,
+  const instSel = select({ label: "Instrumento", value: instrument,
     options: instrumentOptions((i) => i.strings.length),
     onchange: (v) => { instrument = v; tuningName = "standard"; rebuildTuning(); } });
-  const tuningSel = select({ label: "Tuning", value: tuningName, options: tuningOptions(),
+  const tuningSel = select({ label: "Afinação", value: tuningName, options: tuningOptions(),
     onchange: (v) => { tuningName = v; rebuildTuning(); } });
 
-  const startBtn = el("button.btn.primary", { onclick: toggle }, ["Start tuning"]);
+  const startBtn = el("button.btn.primary", { onclick: toggle }, ["Começar a afinar"]);
   root.appendChild(el("div.panel", {}, [
     el("div.grid", { style: { gridTemplateColumns: "1fr 1fr auto" } }, [instSel, tuningSel,
       el("div.col", { style: { justifyContent: "flex-end" } }, [startBtn])]),
@@ -34,7 +35,7 @@ export default async function tuner(ctx) {
 
   // display
   const noteEl = el("div.tuner-note", { html: "—" });
-  const freqEl = el("div.tuner-freq", { text: "Play a note…" });
+  const freqEl = el("div.tuner-freq", { text: "Toque uma nota…" });
   const needle = el("div.tuner-needle");
   const verdict = el("div.tuner-verdict", { text: "" });
   const meter = el("div.tuner-meter", {}, [
@@ -44,14 +45,14 @@ export default async function tuner(ctx) {
   const strings = el("div.string-row");
 
   root.appendChild(el("div.panel.tuner-display", {}, [noteEl, freqEl, meter, verdict,
-    el("p.muted", { style: { marginTop: "14px" }, text: "Select a string to lock the target, or leave on Auto." }),
+    el("p.muted", { style: { marginTop: "14px" }, text: "Escolha uma corda para fixar o alvo, ou deixe no Auto." }),
     strings,
   ]));
 
   rebuildStrings();
 
   function tuningOptions() {
-    return Object.keys(ALT_TUNINGS[instrument] || { standard: 1 }).map((k) => ({ value: k, label: k }));
+    return Object.keys(ALT_TUNINGS[instrument] || { standard: 1 }).map((k) => ({ value: k, label: afin(k) }));
   }
   function rebuildTuning() {
     tuning = (ALT_TUNINGS[instrument] || {})[tuningName] || INSTRUMENTS[instrument].strings;
@@ -82,12 +83,12 @@ export default async function tuner(ctx) {
   async function toggle() {
     if (running) { stop(); return; }
     try { await Audio.startMic(s.inputDeviceId); }
-    catch (e) { toast("Mic access failed: " + e.message, "bad"); return; }
-    running = true; startBtn.textContent = "Stop"; startBtn.classList.remove("primary");
+    catch (e) { toast("Não consegui acessar o microfone: " + e.message, "bad"); return; }
+    running = true; startBtn.textContent = "Parar"; startBtn.classList.remove("primary");
     loop();
   }
   function stop() {
-    running = false; startBtn.textContent = "Start tuning"; startBtn.classList.add("primary");
+    running = false; startBtn.textContent = "Começar a afinar"; startBtn.classList.add("primary");
     if (refStop) { refStop(); refStop = null; }
   }
 
@@ -104,7 +105,7 @@ export default async function tuner(ctx) {
 
   function idle() {
     noteEl.style.opacity = "0.4";
-    verdict.textContent = "Listening…"; verdict.className = "tuner-verdict";
+    verdict.textContent = "Ouvindo…"; verdict.className = "tuner-verdict";
     needle.style.transform = "rotate(0deg)";
     needle.style.background = "var(--muted)";
   }
@@ -124,20 +125,20 @@ export default async function tuner(ctx) {
     const cents = centsTo(freq, refMidi, s.a4);
     const nm = midiToName(refMidi);
     noteEl.innerHTML = `${nm.name}<small>${nm.octave}</small>`;
-    freqEl.textContent = `${freq.toFixed(1)} Hz · target ${midiToFreq(refMidi, s.a4).toFixed(1)} Hz`;
+    freqEl.textContent = `${freq.toFixed(1)} Hz · alvo ${midiToFreq(refMidi, s.a4).toFixed(1)} Hz`;
 
     const clamped = Math.max(-50, Math.min(50, cents));
     needle.style.transform = `rotate(${clamped * 0.9}deg)`;
 
     if (Math.abs(cents) <= 5) {
-      verdict.textContent = "✓ In tune"; verdict.className = "tuner-verdict intune";
+      verdict.textContent = "✓ Afinada"; verdict.className = "tuner-verdict intune";
       needle.style.background = "var(--good)";
       markChip(refMidi, true);
     } else if (cents < 0) {
-      verdict.textContent = `♭ ${Math.abs(cents)}¢ flat — tune up`; verdict.className = "tuner-verdict flat";
+      verdict.textContent = `♭ ${Math.abs(cents)}¢ abaixo — aperte a corda`; verdict.className = "tuner-verdict flat";
       needle.style.background = "var(--warn)"; markChip(refMidi, false);
     } else {
-      verdict.textContent = `♯ ${cents}¢ sharp — tune down`; verdict.className = "tuner-verdict sharp";
+      verdict.textContent = `♯ ${cents}¢ acima — afrouxe a corda`; verdict.className = "tuner-verdict sharp";
       needle.style.background = "var(--warn)"; markChip(refMidi, false);
     }
   }

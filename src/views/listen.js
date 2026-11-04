@@ -24,10 +24,10 @@ export default function listen(ctx) {
   const capCanvas = document.createElement("canvas");
   const shots = [];
 
-  root.appendChild(pageHead("Listen & Make", "Play or sing something; GuitarPicker transcribes it into a playable song at several difficulty levels."));
+  root.appendChild(pageHead("Ouvir e criar", "Toque ou cante algo; o app transcreve em uma música para tocar, em vários níveis de dificuldade."));
 
   // setup controls
-  const tapBtn = el("button.btn", { onclick: tapTempo }, ["Tap tempo"]);
+  const tapBtn = el("button.btn", { onclick: tapTempo }, ["Marcar andamento"]);
   let taps = [];
   function tapTempo() {
     const now = performance.now(); taps.push(now); taps = taps.filter((t) => now - t < 3000);
@@ -37,25 +37,25 @@ export default function listen(ctx) {
       bpm = Math.round(60000 / avg); bpmSlider.setValue(bpm);
     }
   }
-  const bpmSlider = slider({ label: "Tempo (for note alignment)", min: 50, max: 200, step: 1, value: bpm, fmt: (v) => v + " BPM", oninput: (v) => bpm = v });
+  const bpmSlider = slider({ label: "Andamento (para alinhar as notas)", min: 50, max: 200, step: 1, value: bpm, fmt: (v) => v + " BPM", oninput: (v) => bpm = v });
 
-  const capToggle = el("button.btn", { onclick: toggleCapture }, ["🖥️ Capture screen region"]);
+  const capToggle = el("button.btn", { onclick: toggleCapture }, ["🖥️ Capturar parte da tela"]);
   const capStatus = el("span.muted", { text: "" });
 
   root.appendChild(el("div.panel", {}, [
-    el("h2", { text: "1 · Set up" }),
+    el("h2", { text: "1 · Preparar" }),
     el("div.grid", { style: { gridTemplateColumns: "2fr 1fr" } }, [bpmSlider, el("div.col", { style: { justifyContent: "flex-end" } }, [tapBtn])]),
     el("div.row", { style: { marginTop: "10px", alignItems: "center" } }, [capToggle, capStatus]),
-    el("p.muted", { style: { fontSize: "12px" }, html: "Screen capture is optional — when on, GuitarPicker snapshots the region you share into a slideshow that plays behind the notes. You choose the region in the browser's share dialog." }),
+    el("p.muted", { style: { fontSize: "12px" }, html: "A captura de tela é opcional — ligada, o app tira fotos da área que você compartilhar e passa como fundo atrás das notas. Você escolhe a área na janela de compartilhamento do navegador." }),
   ]));
 
   // record panel
   const liveNote = el("div.tuner-note", { html: "—", style: { fontSize: "54px" } });
   const liveMeter = el("div.progress", { style: { width: "200px" } }, [el("i", { style: { width: "0%" } })]);
-  const recBtn = el("button.btn.primary.lg", { onclick: toggleRecord }, ["● Record"]);
+  const recBtn = el("button.btn.primary.lg", { onclick: toggleRecord }, ["● Gravar"]);
   const elapsed = el("span.muted", { text: "0:00" });
   root.appendChild(el("div.panel.center", {}, [
-    el("h2", { text: "2 · Record" }),
+    el("h2", { text: "2 · Gravar" }),
     liveNote,
     el("div.row", { style: { justifyContent: "center", alignItems: "center", margin: "10px 0" } }, [liveMeter]),
     el("div.row", { style: { justifyContent: "center", alignItems: "center" } }, [recBtn, elapsed]),
@@ -66,18 +66,18 @@ export default function listen(ctx) {
 
   async function toggleRecord() {
     if (recording) { stopRecord(); return; }
-    try { await Audio.startMic(s.inputDeviceId); } catch (e) { toast("Mic failed: " + e.message, "bad"); return; }
+    try { await Audio.startMic(s.inputDeviceId); } catch (e) { toast("Falha no microfone: " + e.message, "bad"); return; }
     recording = true; frames = []; startTime = performance.now();
-    recBtn.textContent = "■ Stop"; recBtn.classList.remove("primary");
+    recBtn.textContent = "■ Parar"; recBtn.classList.remove("primary");
     if (capStream) startSnapping();
     loop();
   }
   function stopRecord() {
     recording = false; cancelAnimationFrame(raf);
-    recBtn.textContent = "● Record"; recBtn.classList.add("primary");
+    recBtn.textContent = "● Gravar"; recBtn.classList.add("primary");
     stopSnapping();
     Audio.stopMic();
-    if (frames.length < 5) { toast("Didn't hear enough — try again, a bit louder.", "bad"); return; }
+    if (frames.length < 5) { toast("Não ouvi o suficiente — tente de novo, um pouco mais alto.", "bad"); return; }
     buildResults();
   }
 
@@ -122,13 +122,13 @@ export default function listen(ctx) {
 
   function buildResults() {
     const full = framesToNotes(frames, bpm, s.a4);
-    if (!full.length) { toast("Couldn't find clear notes — try a melody with single notes.", "bad"); return; }
+    if (!full.length) { toast("Não achei notas claras — tente uma melodia com uma nota por vez.", "bad"); return; }
 
     resultPanel.classList.remove("hidden");
     resultPanel.innerHTML = "";
-    resultPanel.appendChild(el("h2", { text: "3 · Your transcription" }));
+    resultPanel.appendChild(el("h2", { text: "3 · Sua transcrição" }));
     resultPanel.appendChild(el("p.muted", {
-      text: `Detected ${full.length} notes over ${fmtTime(full[full.length - 1].time + full[full.length - 1].dur)}. Pick a difficulty and background, then save or play.`,
+      text: `${full.length} notas detectadas em ${fmtTime(full[full.length - 1].time + full[full.length - 1].dur)}. Escolha a dificuldade e o fundo, depois salve ou toque.`,
     }));
 
     // background chooser
@@ -140,13 +140,13 @@ export default function listen(ctx) {
     }
     ANIMATED_BACKGROUNDS.forEach((b) => bgRow.appendChild(bgPill(b, { type: "animated", value: b })));
     bgRow.appendChild(bgPill("solid", { type: "solid", value: "" }));
-    if (shots.length) bgRow.appendChild(bgPill(`📸 captured (${shots.length})`, { type: "slideshow", value: shots.slice() }));
-    resultPanel.append(el("div.muted", { text: "Background:" }), bgRow);
+    if (shots.length) bgRow.appendChild(bgPill(`📸 capturas (${shots.length})`, { type: "slideshow", value: shots.slice() }));
+    resultPanel.append(el("div.muted", { text: "Fundo:" }), bgRow);
 
     const levels = [
-      { id: "beginner", label: "Beginner", desc: "One note per beat — easy to follow" },
-      { id: "intermediate", label: "Intermediate", desc: "Cleaned-up rhythm, ornaments removed" },
-      { id: "advanced", label: "Advanced", desc: "Full transcription as detected" },
+      { id: "beginner", label: "Iniciante", desc: "Uma nota por tempo — fácil de acompanhar" },
+      { id: "intermediate", label: "Intermediário", desc: "Ritmo limpo, sem enfeites" },
+      { id: "advanced", label: "Avançado", desc: "Transcrição completa, como foi detectada" },
     ];
     const grid = el("div.grid.cards");
     for (const lv of levels) {
@@ -154,10 +154,10 @@ export default function listen(ctx) {
       grid.appendChild(el("div.card", {}, [
         el("div.title", { text: lv.label }),
         el("div.sub", { text: lv.desc }),
-        el("div.muted", { text: `${notes.length} notes` }),
+        el("div.muted", { text: `${notes.length} notas` }),
         el("div.row", { style: { marginTop: "auto" } }, [
-          el("button.btn.primary", { onclick: () => saveAndPlay(lv, notes, true) }, ["▶ Play"]),
-          el("button.btn", { onclick: () => saveAndPlay(lv, notes, false) }, ["💾 Save"]),
+          el("button.btn.primary", { onclick: () => saveAndPlay(lv, notes, true) }, ["▶ Tocar"]),
+          el("button.btn", { onclick: () => saveAndPlay(lv, notes, false) }, ["💾 Salvar"]),
         ]),
       ]));
     }
@@ -166,12 +166,12 @@ export default function listen(ctx) {
 
   function saveAndPlay(lv, notes, play) {
     const song = newSong({
-      id: uid(), title: `Recording ${new Date().toLocaleString()} (${lv.label})`,
-      artist: "You", instrument: s.instrument, bpm, difficulty: lv.id, source: "listen",
+      id: uid(), title: `Gravação ${new Date().toLocaleString("pt-BR")} (${lv.label})`,
+      artist: "Você", instrument: s.instrument, bpm, difficulty: lv.id, source: "listen",
       background: chosenBg, notes,
     });
     Store.saveSong(song);
-    toast(`Saved "${song.title}"`, "good");
+    toast(`"${song.title}" salva`, "good");
     if (play) navigate(`#/play/${song.id}`); else navigate("#/library");
   }
 
@@ -182,15 +182,15 @@ export default function listen(ctx) {
       capStream = await navigator.mediaDevices.getDisplayMedia({ video: { frameRate: 2 }, audio: false });
       capVideo.srcObject = capStream; await capVideo.play();
       capStream.getVideoTracks()[0].addEventListener("ended", stopCapture);
-      capToggle.textContent = "🛑 Stop capture";
-      capStatus.textContent = "Sharing — snapshots taken while recording";
-    } catch (e) { toast("Screen capture cancelled", "bad"); }
+      capToggle.textContent = "🛑 Parar captura";
+      capStatus.textContent = "Compartilhando — fotos tiradas durante a gravação";
+    } catch (e) { toast("Captura de tela cancelada", "bad"); }
   }
   function stopCapture() {
     if (capStream) capStream.getTracks().forEach((t) => t.stop());
     capStream = null; stopSnapping();
-    capToggle.textContent = "🖥️ Capture screen region";
-    capStatus.textContent = shots.length ? `${shots.length} snapshots captured` : "";
+    capToggle.textContent = "🖥️ Capturar parte da tela";
+    capStatus.textContent = shots.length ? `${shots.length} fotos capturadas` : "";
   }
   function startSnapping() {
     shots.length = 0;
@@ -200,7 +200,7 @@ export default function listen(ctx) {
       capCanvas.width = 640; capCanvas.height = Math.round(capVideo.videoHeight * scale);
       capCanvas.getContext("2d").drawImage(capVideo, 0, 0, capCanvas.width, capCanvas.height);
       try { shots.push(capCanvas.toDataURL("image/jpeg", 0.55)); } catch {}
-      capStatus.textContent = `${shots.length} snapshots captured`;
+      capStatus.textContent = `${shots.length} fotos capturadas`;
     }, 1500);
   }
   function stopSnapping() { if (capTimer) clearInterval(capTimer); capTimer = 0; }

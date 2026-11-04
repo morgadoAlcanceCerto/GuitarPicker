@@ -4,8 +4,9 @@
 import { DRILLS } from "./drills.js";
 import { builtinSongs } from "./songs.js";
 import { INSTRUMENTS } from "./notes.js";
+import { gen } from "../ui/pt.js";
 
-const GAMES = ["Interval ear training", "Chord identification", "Note naming", "Scale spelling"];
+const GAMES = ["Ouvido para intervalos", "Reconhecer acordes", "Nomes das notas", "Montar escalas"];
 
 export function todayKey(date = new Date()) {
   return date.toISOString().slice(0, 10); // YYYY-MM-DD
@@ -59,11 +60,11 @@ export function dailyActivities(key = todayKey(), instrument = "acoustic-guitar"
   const pitched = INSTRUMENTS[instrument]?.kind !== "percussion";
 
   const plan = [
-    ...(tunable ? [{ id: "tune", icon: "🎚️", title: "Tune up", desc: "Check every string before you play.", hash: "#/tuner" }] : []),
-    ...(pitched ? [{ id: "warmup", icon: "🏋️", title: `Warm-up: ${drill.title}`, desc: drill.desc, hash: "#/training" }] : []),
-    { id: "song", icon: "🎵", title: `Play: ${song.title}`, desc: `${song.artist}${song.genre ? " · " + song.genre : ""}`, hash: `#/play/${song.id}` },
-    { id: "ear", icon: "🎮", title: `Theory game: ${game}`, desc: "Sharpen your ear and your theory.", hash: "#/minigames" },
-    { id: "learn", icon: "📖", title: "Learn a term", desc: "Pick up something new in the glossary.", hash: "#/glossary" },
+    ...(tunable ? [{ id: "tune", icon: "🎚️", title: "Afinar", desc: "Confira todas as cordas antes de tocar.", hash: "#/tuner" }] : []),
+    ...(pitched ? [{ id: "warmup", icon: "🏋️", title: `Aquecimento: ${drill.title}`, desc: drill.desc, hash: "#/training" }] : []),
+    { id: "song", icon: "🎵", title: `Tocar: ${song.title}`, desc: `${song.artist}${song.genre ? " · " + gen(song.genre) : ""}`, hash: `#/play/${song.id}` },
+    { id: "ear", icon: "🎮", title: `Jogo de teoria: ${game}`, desc: "Afie o ouvido e a teoria.", hash: "#/minigames" },
+    { id: "learn", icon: "📖", title: "Aprender um termo", desc: "Descubra algo novo no glossário.", hash: "#/glossary" },
   ];
   // 4 or 5 items depending on the day (one fewer when there's nothing to tune).
   return plan.slice(0, 4 + (seed % 2));
